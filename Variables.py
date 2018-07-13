@@ -3,10 +3,12 @@ import Classes
 n = 10
 m = 10
 
-board = ["_"] * int(n)
-
+board =[]
 for i in range(int(n)):
-    board[i] = ["_"] * int(m)
+    board.append([])
+    for a in range(int(m)):
+        x = Classes.Open_ground
+        board[i].append(x)
 
 players_turn = 2
 game_turn = 0

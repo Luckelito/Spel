@@ -4,12 +4,12 @@ import Variables
 import Classes
 
 def starting_positions(board_height, board_width):
-  placement_swap(Variables.A, 4, 4)
-  placement_swap(Variables.B, 0, 0)
-  placement_swap(Variables.C, 0, 1)
-  placement_swap(Variables.a, (board_width - 2), (board_height - 1))
-  placement_swap(Variables.b, (board_width - 1), (board_height - 1))
-  placement_swap(Variables.c, (board_width - 1), (board_height - 2))
+  placement_swap(Variables.A, 0, int(board_height/2 + 1))
+  placement_swap(Variables.B, 0, int(board_height/2))
+  placement_swap(Variables.C, 0, int(board_height/2 - 1))
+  placement_swap(Variables.a, int(board_width - 1), int(board_height/2 + 1))
+  placement_swap(Variables.b, int(board_width - 1), int(board_height/2))
+  placement_swap(Variables.c, int(board_width - 1), int(board_height/2 - 1))
 
 def boardstate():
   inverted_board = reversed(Variables.board)
@@ -17,11 +17,11 @@ def boardstate():
     for place in row:
         if type(place) == Classes.Character:
             print("   " + place.name + "   ", end="")
-        elif "," in place:
-            index = place.index(",")
-            print(" " * (3 - index) + place + " " * (4 -(len(place) - index)), end="")
+        elif "," in place.name:
+            index = place.name.index(",")
+            print(" " * (3 - index) + place.name + " " * (4 -(len(place) - index)), end="")
         else:
-            print((" " * int(math.floor(4 - (len(place) / 2))) + place + math.ceil(3 - (len(place) / 2)) * " "), end="")
+            print((" " * int(math.floor(4 - (len(place.name) / 2))) + place.name + math.ceil(3 - (len(place.name) / 2)) * " "), end="")
     print("\n")
 
 def placement_swap(character, x_coordinate, y_coordinate):
@@ -66,9 +66,9 @@ def chooseCharacter():
 #  return (legal_targets)
 
 def different_targets(place,output_list,x_coordinate,y_coordinate,target_1,target_2,other_characters):
-    if place == target_1:
+    if type(place) == target_1:
         output_list[0].append([x_coordinate, y_coordinate])
-    elif place == target_2:
+    elif type(place) == target_2:
         output_list[1].append([x_coordinate, y_coordinate])
     elif other_characters == "ally" and type(place) == Classes.Character:
         if place.team == Variables.players_turn:
@@ -83,22 +83,22 @@ def LoS_check(coordinates, coordinates_origin, illegal_list, target_1, target_2,
     if abs((coordinates[-1] - coordinates_origin[-1]) / (coordinates[0] - coordinates_origin[0])) < 1:
         for i in range(int((int(coordinates_origin[0] - coordinates[0]) ** 2 + int(coordinates_origin[-1] - coordinates[-1]) ** 2) ** 0.5)):
             if (coordinates[0] - delta_x * i) != coordinates_origin[0] or int(coordinates[-1] - delta_y * round(abs((coordinates[-1] - coordinates_origin[-1]) / (coordinates[0] - coordinates_origin[0])) * i)) != coordinates_origin[-1]:
-                if Variables.board[int(coordinates[-1] - delta_y * math.ceil(abs((coordinates[-1] - coordinates_origin[-1]) / (coordinates[0] - coordinates_origin[0])) * i))][int(coordinates[0] - delta_x * i)] != "_" and Variables.board[int(coordinates[-1] - delta_y * math.floor(abs((coordinates[-1] - coordinates_origin[-1]) / (coordinates[0] - coordinates_origin[0])) * i))][int(coordinates[0] - delta_x * i)]:
+                if type(Variables.board[int(coordinates[-1] - delta_y * math.ceil(abs((coordinates[-1] - coordinates_origin[-1]) / (coordinates[0] - coordinates_origin[0])) * i))][int(coordinates[0] - delta_x * i)]) == Classes.Cover:
                     for k in range(i):
                         different_targets(Variables.board[int(coordinates[-1] - delta_y * math.ceil(abs((coordinates[-1] - coordinates_origin[-1]) / (coordinates[0] - coordinates_origin[0])) * k))][int(coordinates[0] - delta_x * k)], illegal_list, int(coordinates[0] - delta_x * k), int(coordinates[-1] - delta_y * math.ceil(abs((coordinates[-1] - coordinates_origin[-1]) / (coordinates[0] - coordinates_origin[0])) * k)), target_1, target_2, other_characters)
                     return
-                if Variables.board[int(coordinates[-1] - delta_y * math.floor(abs((coordinates[-1] - coordinates_origin[-1]) / (coordinates[0] - coordinates_origin[0])) * i))][int(coordinates[0] - delta_x * i)] != "_" and Variables.board[int(coordinates[-1] - delta_y * math.floor(abs((coordinates[-1] - coordinates_origin[-1]) / (coordinates[0] - coordinates_origin[0])) * i))][int(coordinates[0] - delta_x * i)]:
+                if type(Variables.board[int(coordinates[-1] - delta_y * math.floor(abs((coordinates[-1] - coordinates_origin[-1]) / (coordinates[0] - coordinates_origin[0])) * i))][int(coordinates[0] - delta_x * i)]) == Classes.Cover:
                     for k in range(i):
                         different_targets(Variables.board[int(coordinates[-1] - delta_y * math.floor(abs((coordinates[-1] - coordinates_origin[-1]) / (coordinates[0] - coordinates_origin[0])) * k))][int(coordinates[0] - delta_x * k)], illegal_list,int(coordinates[0] - delta_x * k), int(coordinates[-1] - delta_y * math.floor(abs((coordinates[-1] - coordinates_origin[-1]) / (coordinates[0] - coordinates_origin[0])) * k)), target_1, target_2, other_characters)
                     return
     elif abs((coordinates[-1] - coordinates_origin[-1]) / (coordinates[0] - coordinates_origin[0])) >= 1:
         for i in range(int((int(coordinates_origin[-1] - coordinates[-1]) ** 2 + int(coordinates_origin[0] - coordinates[0]) ** 2) ** 0.5)):
             if int(coordinates[-1] - delta_y * i) != coordinates_origin[-1] or int(coordinates[0] - delta_x * round(abs((coordinates[0] - coordinates_origin[0]) / (coordinates[-1] - coordinates_origin[-1])) * i)) != coordinates_origin[0]:
-                if Variables.board[int(coordinates[-1] - delta_y * i)][int(coordinates[0] - delta_x * math.ceil(abs((coordinates[0] - coordinates_origin[0]) / (coordinates[-1] - coordinates_origin[-1])) * i))] != "_":
+                if type(Variables.board[int(coordinates[-1] - delta_y * i)][int(coordinates[0] - delta_x * math.ceil(abs((coordinates[0] - coordinates_origin[0]) / (coordinates[-1] - coordinates_origin[-1])) * i))]) == Classes.Cover:
                     for k in range(i):
                         different_targets(Variables.board[int(coordinates[-1] - delta_y * k)][int(coordinates[0] - delta_x * math.ceil(abs((coordinates[0] - coordinates_origin[0]) / (coordinates[-1] - coordinates_origin[-1])) * k))], illegal_list, int(coordinates[0] - delta_x * math.ceil(abs((coordinates[0] - coordinates_origin[0]) / (coordinates[-1] - coordinates_origin[-1])) * k)), (coordinates[-1] - delta_y * k), target_1, target_2, other_characters)
                     return
-                if Variables.board[int(coordinates[-1] - delta_y * i)][int(coordinates[0] - delta_x * math.floor(abs((coordinates[0] - coordinates_origin[0]) / (coordinates[-1] - coordinates_origin[-1])) * i))] != "_":
+                if type(Variables.board[int(coordinates[-1] - delta_y * i)][int(coordinates[0] - delta_x * math.floor(abs((coordinates[0] - coordinates_origin[0]) / (coordinates[-1] - coordinates_origin[-1])) * i))]) == Classes.Cover:
                     for k in range(i):
                         different_targets(Variables.board[int(coordinates[-1] - delta_y * k)][int(coordinates[0] - delta_x * math.floor(abs((coordinates[0] - coordinates_origin[0]) / (coordinates[-1] - coordinates_origin[-1])) * k))], illegal_list, int(coordinates[0] - delta_x * math.floor(abs((coordinates[0] - coordinates_origin[0]) / (coordinates[-1] - coordinates_origin[-1])) * k)), (coordinates[-1] - delta_y * k), target_1, target_2, other_characters)
                     return
@@ -115,49 +115,31 @@ def LoS_check_2(place, origin, illegal_targets, target_1, target_2, other_charac
     elif place[0]-origin[0] == 0 and place[-1]-origin[-1] > 0:
         for i in range(int((int(origin[-1] - place[-1])**2 + int(origin[0] - place[0])**2)**0.5)+1):
             if (place[-1]-i) != origin[-1] or (place[0]-(place[0]-origin[0])/(place[-1]-origin[-1])*i) != origin[0]:
-                if Variables.board[int(place[-1]-i)][int(place[0])] != "_":
+                if type(Variables.board[int(place[-1]-i)][int(place[0])]) == Classes.Cover:
                     for k in range(i):
                         different_targets(Variables.board[int(place[-1]-k)][int(place[0])], illegal_targets, int(place[0]), int(place[-1]-k), target_1, target_2, other_characters)
                     break
     elif place[0]-origin[0] == 0 and place[-1]-origin[-1] < 0:
         for i in range(int((int(origin[-1] - place[-1])**2 + int(origin[0] - place[0])**2)**0.5)+1):
             if (place[-1]+i) != origin[-1] or (place[0]+(place[0]-origin[0])/(place[-1]-origin[-1])*i) != origin[0]:
-                if Variables.board[int(place[-1]+i)][int(place[0])] != "_":
+                if type(Variables.board[int(place[-1]+i)][int(place[0])]) == Classes.Cover:
                     for k in range(i):
                         different_targets(Variables.board[int(place[-1]+k)][int(place[0])], illegal_targets, int(place[0]), int(place[-1]+k), target_1, target_2, other_characters)
                     break
     elif place[-1]-origin[-1] == 0 and place[0]-origin[0] > 0:
         for i in range(int((int(origin[-1] - place[-1])**2 + int(origin[0] - place[0])**2)**0.5)+1):
             if (place[0]-i) != origin[0]:
-                if Variables.board[int(place[-1])][int(place[0]-i)] != "_":
+                if type(Variables.board[int(place[-1])][int(place[0]-i)]) == Classes.Cover:
                     for k in range(i):
                         different_targets(Variables.board[int(place[-1])][int(place[0]-k)], illegal_targets, int(place[0]-k), int(place[-1]), target_1, target_2, other_characters)
                     break
     elif place[-1]-origin[-1] == 0 and place[0]-origin[0] < 0:
         for i in range(int((int(origin[-1] - place[-1])**2 + int(origin[0] - place[0])**2)**0.5)+1):
             if (place[0]+i) != origin[0]:
-                if Variables.board[int(place[-1])][int(place[0]+i)] != "_":
+                if type(Variables.board[int(place[-1])][int(place[0]+i)]) == Classes.Cover:
                     for k in range(i):
                         different_targets(Variables.board[int(place[-1])][int(place[0]+k)], illegal_targets, int(place[0]+k), int(place[-1]), target_1, target_2, other_characters)
                     break
-
-
-    list1 = [[], [], []]
-
-    for lista in illegal_targets:
-        for place in lista:
-            k = 0
-            for place_1 in list1[illegal_targets.index(lista)]:
-                if place == place_1:
-                    k += 1
-            if k == 0:
-                for i in range(len(lista)):
-                    if place == lista[i] and lista.index(place) != i:
-                        list1[illegal_targets.index(lista)].append(lista[i])
-
-    for lista in list1:
-        for place in lista:
-            illegal_targets[list1.index(lista)].remove(place)
 
 def target_LoS(origin, ability_range, target_1, target_2, other_characters): #parameter = "all","ally" or "enemy"
     y = 0
@@ -171,38 +153,37 @@ def target_LoS(origin, ability_range, target_1, target_2, other_characters): #pa
         y += 1
 
     illegal_targets = [[], [], []]
-    cover_los = 1
+
 
     for lista in legal_targets:
         for place in lista:
-            for i in range(-1, 2, 2):
-                LoS_check_2(place, origin, illegal_targets, target_1, target_2, other_characters)
-                if Variables.board[place[-1]][place[0] + i] != "_":
-                    for k in range(-1, 2, 2):
-                        if Variables.board[place[-1] + k][place[0]] != "_":
-                            LoS_check_2((place[-1] + k, place[0]), origin, illegal_targets, target_1, target_2, other_characters)
-                            cover_los += 1
-                if Variables.board[place[-1] + i][place[0]] != "_":
-                    for k in range(-1, 2, 2):
-                        if Variables.board[place[-1]][place[0] + k] != "_":
-                            LoS_check_2((place[-1], place[0] + k), origin, illegal_targets, target_1, target_2, other_characters)
-                            cover_los += 1
+            LoS_check_2(place, origin, illegal_targets, target_1, target_2, other_characters)
+            #for i in range(-1, 2, 2):
+            #    cover_los = 1
+            #if Variables.board[place[-1]][place[0] + i] != "_":
+            #        for k in range(-1, 2, 2):
+            #            if Variables.board[place[-1] + k][place[0]] != "_":
+            #                LoS_check_2((place[-1] + k, place[0]), origin, illegal_targets, target_1, target_2, other_characters)
+            #                cover_los += 1
+            #    if Variables.board[place[-1] + i][place[0]] != "_":
+            #        for k in range(-1, 2, 2):
+            #            if Variables.board[place[-1]][place[0] + k] != "_":
+            #                LoS_check_2((place[-1], place[0] + k), origin, illegal_targets, target_1, target_2, other_characters)
+            #                cover_los += 1
 
-    list1 = [[], [], []]
+            #    list1 = [[], [], []]
+             #   if cover_los > 2:
+              #      for list_1 in illegal_targets:
+               #         a = 2 * cover_los
+                #        for i in range(len(list_1)):
+                 #           if place == list_1[i]:
+                  #              a -= 1
+                   #     if a > cover_los:
+                    #        list1[illegal_targets.index(list_1)].append(place)
 
-
-    for lista in illegal_targets:
-        for place in lista:
-            a = 0
-            for i in range(len(lista)):
-                if place == lista[i]:
-                    a += 1
-            if a < cover_los:
-                list1[illegal_targets.index(lista)].append(place)
-
-    for lista in list1:
-        for place in lista:
-            illegal_targets[list1.index(lista)].remove(place)
+             #       for list_2 in list1:
+              #          for place_2 in list_2:
+               #             illegal_targets[list1.index(list_2)].remove(place_2)
 
     list1 = [[], [], []]
 
@@ -237,13 +218,12 @@ def walk(character):
         movement = input("Do you want to rush or walk (r=rush or w=walk):")
         while 1 == 1:
             if movement == "w":
-                legal_destination = target_LoS(coordinate, character.speed, "_", "_","ally")
+                legal_destination = target_LoS(coordinate, character.speed, Classes.Open_ground, Classes.Open_ground, "ally")
                 moves += 1
                 character.move = 1
                 break
             elif movement == "r" and Variables.tot_moves < 2:
-                print (moves)
-                legal_destination = target_LoS(coordinate, (character.speed + 2), "_", "_", "ally")
+                legal_destination = target_LoS(coordinate, (character.speed + 2), Classes.Open_ground, Classes.Open_ground, "ally")
                 moves += 2
                 character.move = 1
                 break
