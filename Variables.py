@@ -7,7 +7,7 @@ board =[]
 for i in range(int(n)):
     board.append([])
     for a in range(int(m)):
-        x = Classes.Open_ground
+        x = Classes.Open_ground()
         board[i].append(x)
 
 players_turn = 2

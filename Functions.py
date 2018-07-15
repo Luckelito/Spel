@@ -3,6 +3,7 @@ import random
 import Variables
 import Classes
 
+
 def starting_positions(board_height, board_width):
   placement_swap(Variables.A, 0, int(board_height/2 + 1))
   placement_swap(Variables.B, 0, int(board_height/2))
@@ -10,6 +11,7 @@ def starting_positions(board_height, board_width):
   placement_swap(Variables.a, int(board_width - 1), int(board_height/2 + 1))
   placement_swap(Variables.b, int(board_width - 1), int(board_height/2))
   placement_swap(Variables.c, int(board_width - 1), int(board_height/2 - 1))
+
 
 def boardstate():
   inverted_board = reversed(Variables.board)
@@ -19,13 +21,16 @@ def boardstate():
             print("   " + place.name + "   ", end="")
         elif "," in place.name:
             index = place.name.index(",")
-            print(" " * (3 - index) + place.name + " " * (4 -(len(place) - index)), end="")
+            print(" " * (3 - index) + place.name + " " * (4 - (len(place.name) - index)), end="")
         else:
             print((" " * int(math.floor(4 - (len(place.name) / 2))) + place.name + math.ceil(3 - (len(place.name) / 2)) * " "), end="")
     print("\n")
 
+
 def placement_swap(character, x_coordinate, y_coordinate):
+    character.ground = Variables.board[y_coordinate][x_coordinate]
     Variables.board[y_coordinate][x_coordinate] = character
+
 
 def character_coordinates(character):
     for row in Variables.board:
@@ -33,22 +38,23 @@ def character_coordinates(character):
             if position == character:
                 return (row.index(position), Variables.board.index(row))
 
-def chooseCharacter():
-  current_team = []
-  for character in Variables.characters_alive:
-    if character.team == Variables.players_turn:
-      current_team.append(character)
 
-  selected_character = input("Choose your character " + str(current_team) + ":")
-  while 1 == 1:
-    k = 0
-    for character in current_team:
-      if str(character.name) == str(selected_character):
-        return character
-      else:
-        k+=1
-    if k == len(current_team):
-      selected_character = input("Please choose a valid character " + str(current_team) + ":")
+def chooseCharacter():
+    current_team = []
+    for character in Variables.characters_alive:
+        if character.team == Variables.players_turn:
+            current_team.append(character)
+
+    selected_character = input("Choose your character " + str(current_team) + ":")
+    while 1 == 1:
+        k = 0
+        for character in current_team:
+            if str(character.name) == str(selected_character):
+                return character
+            else:
+                k += 1
+        if k == len(current_team):
+            selected_character = input("Please choose a valid character " + str(current_team) + ":")
 
 #def target(origin, ability_range, target_1, target_2, other_characters):#parameter = "ally" or "enemy"
 #  y = 0
@@ -65,7 +71,8 @@ def chooseCharacter():
 #            print("HEJ")
 #  return (legal_targets)
 
-def different_targets(place,output_list,x_coordinate,y_coordinate,target_1,target_2,other_characters):
+
+def different_targets(place, output_list, x_coordinate, y_coordinate, target_1, target_2, other_characters):
     if type(place) == target_1:
         output_list[0].append([x_coordinate, y_coordinate])
     elif type(place) == target_2:
@@ -78,6 +85,7 @@ def different_targets(place,output_list,x_coordinate,y_coordinate,target_1,targe
             output_list[2].append([x_coordinate, y_coordinate])
     elif other_characters == "all" and type(place) == Classes.Character:
         output_list[2].append([x_coordinate, y_coordinate])
+
 
 def LoS_check(coordinates, coordinates_origin, illegal_list, target_1, target_2, other_characters, delta_x, delta_y): # delta_x and delta_y = -1 or 1
     if abs((coordinates[-1] - coordinates_origin[-1]) / (coordinates[0] - coordinates_origin[0])) < 1:
@@ -102,6 +110,7 @@ def LoS_check(coordinates, coordinates_origin, illegal_list, target_1, target_2,
                     for k in range(i):
                         different_targets(Variables.board[int(coordinates[-1] - delta_y * k)][int(coordinates[0] - delta_x * math.floor(abs((coordinates[0] - coordinates_origin[0]) / (coordinates[-1] - coordinates_origin[-1])) * k))], illegal_list, int(coordinates[0] - delta_x * math.floor(abs((coordinates[0] - coordinates_origin[0]) / (coordinates[-1] - coordinates_origin[-1])) * k)), (coordinates[-1] - delta_y * k), target_1, target_2, other_characters)
                     return
+
 
 def LoS_check_2(place, origin, illegal_targets, target_1, target_2, other_characters):
     if place[0]-origin[0] > 0 and place[-1]-origin[-1] > 0:
@@ -141,6 +150,7 @@ def LoS_check_2(place, origin, illegal_targets, target_1, target_2, other_charac
                         different_targets(Variables.board[int(place[-1])][int(place[0]+k)], illegal_targets, int(place[0]+k), int(place[-1]), target_1, target_2, other_characters)
                     break
 
+
 def target_LoS(origin, ability_range, target_1, target_2, other_characters): #parameter = "all","ally" or "enemy"
     y = 0
     legal_targets = [[], [], []]
@@ -153,7 +163,6 @@ def target_LoS(origin, ability_range, target_1, target_2, other_characters): #pa
         y += 1
 
     illegal_targets = [[], [], []]
-
 
     for lista in legal_targets:
         for place in lista:
@@ -208,6 +217,7 @@ def target_LoS(origin, ability_range, target_1, target_2, other_characters): #pa
 
     return legal_targets
 
+
 def walk(character):
     if character.move == 1:
         print("This character has already moved this turn, please choose another!")
@@ -233,7 +243,7 @@ def walk(character):
                 movement = input("Choose a valid ability (r,w or cancel). Make sure you have enough moves left for the desired move:")
 
     for legal_coordinate in legal_destination[0]:
-        placement_swap(str(legal_coordinate[0]) + "," + str(legal_coordinate[-1]),int(legal_coordinate[0]), int(legal_coordinate[-1]))
+        Variables.board[legal_coordinate[-1]][legal_coordinate[0]].name = str(legal_coordinate[0]) + "," + str(legal_coordinate[-1])
 
     boardstate()
     destination = input("Choose destination (x,y)").split(",")
@@ -244,19 +254,20 @@ def walk(character):
                 legal_destination[0].remove(legal_coordinate)
                 e += 1
         if e == 1:
+            Variables.board[coordinate[1]][coordinate[0]] = character.ground
             placement_swap(character, int(destination[0]), int(destination[-1]))
-            placement_swap("_", coordinate[0], coordinate[-1])
             break
         else:
             boardstate()
             destination = input("Choose a valid destination (x,y)")
 
     for legal_coordinate in legal_destination[0]:
-        placement_swap("_", int(legal_coordinate[0]), int(legal_coordinate[-1]))
+        Variables.board[legal_coordinate[-1]][legal_coordinate[0]].name = "_"
 
     boardstate()
 
     return int(moves)
+
 
 def shoot(character):
     if character.shoot == 1:
@@ -279,7 +290,7 @@ def shoot(character):
     list1 = []
     old_names = []
     for i in range(int(1/chosen_weapon.dropoff)):
-        accuracy_list = target_LoS(character_coordinates(character), (chosen_weapon.range_ + i), "_", "_", "enemy")
+        accuracy_list = target_LoS(character_coordinates(character), (chosen_weapon.range_ + i), Classes.Open_ground, Classes.Open_ground, "enemy")
         for accuracy_place in accuracy_list[0]:
             if (100 - chosen_weapon.dropoff * i * 100) > 0:
                 placement_swap((str(round(100 - chosen_weapon.dropoff * i * 100)) + "%"),int(accuracy_place[0]), int(accuracy_place[-1]))
@@ -287,10 +298,10 @@ def shoot(character):
         if len(accuracy_list[2]) > 0:
             for accuracy_place in accuracy_list[2]:
                 old_names.append(Variables.board[accuracy_place[1]][accuracy_place[0]].name)
-                Variables.board[accuracy_place[1]][accuracy_place[0]].name = (old_names[-1]+" "+str(100-100 * chosen_weapon.dropoff * (((character_coordinates(character)[0] - accuracy_place[0])**2 + (character_coordinates(character)[-1] - accuracy_place[1])**2)**0.5-chosen_weapon.range_)))
+                Variables.board[accuracy_place[1]][accuracy_place[0]].name = (old_names[-1] + " " + str(100 - 100 * chosen_weapon.dropoff * (((character_coordinates(character)[0] - accuracy_place[0])**2 + (character_coordinates(character)[-1] - accuracy_place[1])**2)**0.5 - chosen_weapon.range_)))
     boardstate()
 
-    if len(accuracy_list[2])>0:
+    if len(accuracy_list[2]) > 0:
         target_character = input("Choose your target:")
         k = 0
         print(accuracy_list)
@@ -316,10 +327,11 @@ def shoot(character):
         print("No legal targets!")
 
     for accuracy_place in list1:
-       placement_swap("_",int(accuracy_place[0]), int(accuracy_place[-1]))
+        accuracy_place.name = "_"
 
     boardstate()
     return moves
+
 
 def turn(character):
     desired_move = input("Do you want to move or shoot? (m=move or s=shoot)")
@@ -337,9 +349,11 @@ def turn(character):
             desired_move = input("Choose a valid ability (m=move or s=shoot):")
     return moves
 
+
 def deal_damage(shooter, weapon, target):
   target.health -= weapon.damage
   print(str(shooter)+" has dealt "+str(weapon.damage)+" damage to "+str(target)+"! "+str(target)+" has "+str(target.health)+" health left.")
+
 
 def alive():
     living = Variables.characters_alive
@@ -350,5 +364,5 @@ def alive():
             for row in Variables.board:
                 for place in row:
                     if place == character.name:
-                        placement_swap("_", row.index(place), Variables.board.index(row))
+                        Variables.board[Variables.board[row.index(place)]][row.index(place)].name = "_"
     return living

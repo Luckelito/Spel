@@ -6,8 +6,8 @@ import random
 for i in range(int((Variables.n * Variables.m)**0.5)):
     random_row = random.randint(1, int(Variables.n) - 2)
     random_col = random.randint(1, int(Variables.m) - 2)
-    if Variables.board[random_row][random_col] == Classes.Open_ground:
-        cover = Classes.Cover
+    if type(Variables.board[random_row][random_col]) == Classes.Open_ground:
+        cover = Classes.Cover()
         cover.name = str(random.randint(1, 5))
         Functions.placement_swap(cover, random_col, random_row)
         Functions.placement_swap(cover, (-random_col - 1), (-random_row - 1))
