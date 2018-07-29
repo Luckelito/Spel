@@ -1,4 +1,5 @@
 from math import *
+from itertools import *
 from random import *
 import Variables
 import Classes
@@ -83,18 +84,7 @@ def target_los(origin, ability_range):
 def target_walk(origin, ability_range):
     legal_targets = [[], [], []]
 
-    path_list = []
-    for a in range(-1, 2, 1):
-        for b in range(-1, 2, 1):
-            for c in range(-1, 2, 1):
-                for d in range(-1, 2, 1):
-                    for e in range(-1, 2, 1):
-                        for f in range(-1, 2, 1):
-                            for g in range(-1, 2, 1):
-                                for h in range(-1, 2, 1):
-                                    path_list.append([a, b, c, d, e, f, g, h])
-
-    for path_sublist in path_list:
+    for combination in (product("210", repeat=ability_range*2)):
         z = 0
         u = 0
         place = [0, 0]
@@ -102,8 +92,8 @@ def target_walk(origin, ability_range):
         place[1] = origin.y
         current_path = []
         while True:
-            x = path_sublist[z]
-            y = path_sublist[int(z+len(path_sublist)/2)]
+            x = int(combination[z]) - 1
+            y = int(combination[int(z+len(combination)/2)]) - 1
 
             if place[0] + x == origin.x and place[1] + y == origin.y:
                 break
@@ -156,17 +146,19 @@ def target_walk(origin, ability_range):
 
 
 def turn(character):
-    if character.speed - character.move > 0:
+    if character.speed - character.move > Variables.stamina:
+        target_walk(character.coordinate, Variables.stamina)
+    elif character.speed - character.move > 0:
         target_walk(character.coordinate, character.speed - character.move)
-        for row in Variables.board:
-            for place in row:
-                if place.is_walkable:
-                    if type(place.character) == Classes.Character:
-                        place.character.name = (
-                                    place.character.true_name + " " + str(place.x) + "," + str(place.y) + "(" + str(
-                                place.required_stamina) + ")")
-                    else:
-                        place.name = (str(place.x) + "," + str(place.y) + "(" + str(place.required_stamina) + ")")
+    for row in Variables.board:
+        for place in row:
+            if place.is_walkable:
+                if type(place.character) == Classes.Character:
+                    place.character.name = (
+                                place.character.true_name + " " + str(place.x) + "," + str(place.y) + "(" + str(
+                            place.required_stamina) + ")")
+                else:
+                    place.name = (str(place.x) + "," + str(place.y) + "(" + str(place.required_stamina) + ")")
     boardstate()
     action = input("Do you want to rush, walk or shoot (r=rush(4 stamina), (x,y)=walk, s=shoot(3 stamina), c=cancel or e=end turn:")
     while True:

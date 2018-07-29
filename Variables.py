@@ -12,11 +12,11 @@ for i in range(int(board_height)):
 
 players_turn = 2
 game_turn = 0
-stamina = 15
+stamina = 12
 
 A = Character(true_name="A", name="A", speed=4, health=220, team=1, move=0, shoot=False, coordinate=None)
 B = Character(true_name="B", name="B", speed=3, health=280, team=1, move=0, shoot=False, coordinate=None)
-C = Character(true_name="C", name="C", speed=4, health=180, team=1, move=0, shoot=False, coordinate=None)
+C = Character(true_name="C", name="C", speed=3, health=180, team=1, move=0, shoot=False, coordinate=None)
 a = Character(true_name="a", name="a", speed=4, health=220, team=2, move=0, shoot=False, coordinate=None)
 b = Character(true_name="b", name="b", speed=3, health=280, team=2, move=0, shoot=False, coordinate=None)
 c = Character(true_name="c", name="c", speed=3, health=180, team=2, move=0, shoot=False, coordinate=None)
