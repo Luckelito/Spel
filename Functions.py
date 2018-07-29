@@ -195,6 +195,18 @@ def turn(character):
                             else:
                                 place.name = (
                                             str(place.x) + "," + str(place.y) + "(" + str(place.required_stamina) + ")")
+
+                boardstate()
+
+                destination = input("Choose your destination (x,y):")
+                while True:
+                    if Variables.board[int(destination[-1])][int(destination[0])].is_walkable:
+                        placement_swap(character, Variables.board[int(destination[-1])][int(destination[0])])
+                        break
+                    else:
+                        boardstate()
+                        destination = input("Choose a valid destination (x,y):")
+
                 character.move = character.speed
 
                 for row in Variables.board:
@@ -205,6 +217,8 @@ def turn(character):
                         place.name = place.true_name
                         if type(place.character) == Classes.Character:
                             place.character.name = place.character.true_name
+
+                boardstate()
                 return 4
             else:
                 action = input("You can't rush if you already have moved. Choose a valid ability ((x,y)=walk, s=shoot, c=cancel or e=end turn:")

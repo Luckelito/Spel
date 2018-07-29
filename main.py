@@ -42,7 +42,6 @@ while True:
     if Variables.players_turn == 2 and Variables.game_turn == 1:
         Variables.stamina = 15
 
-
     while Variables.stamina > 0:
         print("It is player " + str(Variables.players_turn) + "'s turn. You have " + str(Variables.stamina) + " stamina left.")
         Variables.stamina -= Functions.turn(Functions.choose_character())
