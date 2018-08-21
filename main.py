@@ -3,6 +3,9 @@ import Variables
 import Classes
 from random import *
 
+for character in Variables.characters_alive:
+    Functions.equip(character, Classes.BasicWeapon)
+
 for i in range(int((Variables.board_height * Variables.board_width)/5)):
     random_row = randint(1, int(Variables.board_height) - 2)
     random_col = randint(1, int(Variables.board_width) - 2)
@@ -14,8 +17,6 @@ for i in range(int((Variables.board_height * Variables.board_width)/5)):
     Variables.board[Variables.board_width - random_row][Variables.board_height - random_col].name = Variables.board[Variables.board_width - random_row][Variables.board_height - random_col].health
     Variables.board[Variables.board_width - random_row][Variables.board_height - random_col].is_cover = True
 
-
-# test covers
 # cover_list = [[1, 4], [1, 5], [0, 6]]
 # for coordinate in cover_list:
 #    cover = Classes.Cover(name=str(random.randint(1, 4)))
@@ -26,11 +27,6 @@ Functions.starting_positions(int(Variables.board_height), int(Variables.board_wi
 Functions.boardstate()
 
 while True:
-    if Variables.players_turn > 1:
-        Variables.players_turn -= 1
-
-    else:
-        Variables.players_turn += 1
 
     for character in Variables.characters_alive:
         character.move = 0
@@ -46,3 +42,9 @@ while True:
         print("It is player " + str(Variables.players_turn) + "'s turn. You have " + str(Variables.stamina) + " stamina left.")
         Variables.stamina -= Functions.turn(Functions.choose_character())
         Functions.alive()
+
+    if Variables.players_turn > 1:
+        Variables.players_turn -= 1
+
+    else:
+        Variables.players_turn += 1

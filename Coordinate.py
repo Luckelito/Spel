@@ -2,9 +2,8 @@ import Variables
 import Functions
 from Classes import *
 
-
 class Coordinate:
-    def __init__(self, true_name, name, health, x, y, is_cover, is_open, is_los, is_walkable, required_stamina, path, character):
+    def __init__(self, true_name, name, health, x, y, is_cover, is_open, is_los, is_walkable, is_shootable, required_stamina, path, character, areas):
         self.true_name = true_name
         self.name = name
         self.health = health
@@ -14,9 +13,11 @@ class Coordinate:
         self.is_open = is_open
         self.is_los = is_los
         self.is_walkable = is_walkable
+        self.is_shootable = is_shootable
         self.required_stamina = required_stamina
         self.path = path
         self.character = character
+        self.areas = areas
 
     def los(self, character_origin):
         if self.x - character_origin.x > 0 and self.y - character_origin.y > 0:

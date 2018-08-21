@@ -5,6 +5,10 @@ import Variables
 import Classes
 
 
+def equip(character, weapon_class):
+    character.weapon = weapon_class(character=character)
+
+
 def starting_positions(board_height, board_width):
     placement_swap(Variables.A, Variables.board[int(board_height/2 + 1)][0])
     placement_swap(Variables.B, Variables.board[int(board_height/2)][0])
@@ -16,6 +20,8 @@ def starting_positions(board_height, board_width):
 
 def boardstate():
     inverted_board = reversed(Variables.board)
+    print("")
+    print("")
     for row in inverted_board:
         for place in row:
             if type(place.character) == Classes.Character:
@@ -28,6 +34,19 @@ def boardstate():
             else:
                 print((" " * int(floor(5 - (len(place.name) / 2))) + place.name + ceil(4 - (len(place.name) / 2)) * " "), end="")
         print("\n")
+
+
+def reset_board():
+    for row in Variables.board:
+        for place in row:
+            place.is_los = False
+            place.is_walkable = False
+            place.is_shootable = False
+            place.required_stamina = 100
+            place.path = []
+            place.name = place.true_name
+            if type(place.character) == Classes.Character:
+                place.character.name = place.character.true_name
 
 
 def placement_swap(character, new_coordinate):
@@ -146,6 +165,7 @@ def target_walk(origin, ability_range):
 
 
 def turn(character):
+    boardstate()
     if character.speed - character.move > Variables.stamina:
         target_walk(character.coordinate, Variables.stamina)
     elif character.speed - character.move > 0:
@@ -170,15 +190,9 @@ def turn(character):
                     moves = Variables.board[int(action[-1])][int(action[0])].required_stamina
                     character.move += moves
 
-                    for row in Variables.board:
-                        for place in row:
-                            place.is_walkable = False
-                            place.required_stamina = 100
-                            place.path = []
-                            place.name = place.true_name
-                            if type(place.character) == Classes.Character:
-                                place.character.name = place.character.true_name
+                    reset_board()
                     boardstate()
+
                     return moves
                 else:
                     boardstate()
@@ -209,31 +223,24 @@ def turn(character):
 
                 character.move = character.speed
 
-                for row in Variables.board:
-                    for place in row:
-                        place.is_walkable = False
-                        place.required_stamina = 100
-                        place.path = []
-                        place.name = place.true_name
-                        if type(place.character) == Classes.Character:
-                            place.character.name = place.character.true_name
-
+                reset_board()
                 boardstate()
                 return 4
             else:
                 action = input("You can't rush if you already have moved. Choose a valid ability ((x,y)=walk, s=shoot, c=cancel or e=end turn:")
         elif action == "s":
             if not character.shoot:
-                if Variables.stamina < 3:
+                if Variables.stamina < character.weapon.stamina_cost:
                     action = input("You don't have enough stamina to shoot. Choose a valid ability ((x,y)=walk, r=rush, c=cancel or e=end turn):")
                 else:
-                    print("Bang!")
-                    return 3
+                    return character.weapon.shoot()
             else:
                 action = input("You have already shoot. Choose a valid ability ((x,y)=walk, r=rush, c=cancel or e=end turn):")
         elif action == "c":
+            reset_board()
             return 0
         elif action == "e":
+            reset_board()
             return 20
         else:
             action = input("Choose a valid ability (r=rush(4 stamina), (x,y)=walk, s=shoot(3 stamina), c=cancel or e=end turn:")
