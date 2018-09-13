@@ -21,11 +21,15 @@ def starting_positions(board_height, board_width):
 def boardstate():
     inverted_board = reversed(Variables.board)
     print("")
-    print("")
     for row in inverted_board:
         for place in row:
             if type(place.character) == Classes.Character:
-                print((" " * int(floor(5 - (len(place.character.name) / 2))) + place.character.name + ceil(4 - (len(place.character.name) / 2)) * " "), end="")
+                if place.character.has_shield:
+                    print((" " * int(floor(4 - (len(place.character.name) / 2))) + "(" + place.character.name + ")" + ceil(3 - (len(place.character.name) / 2)) * " "), end="")
+                else:
+                    print((" " * int(floor(5 - (len(place.character.name) / 2))) + place.character.name + ceil(4 - (len(place.character.name) / 2)) * " "), end="")
+            elif len(place.areas) > 0:
+                print((" " * int(floor(5 - (len(place.areas) / 2))) + "." * len(place.areas) + ceil(4 - (len(place.areas) / 2)) * " "), end="")
             elif place.is_cover:
                 print((" " * 4 + str(place.health) + 4 * " "), end="")
             elif "," in place.name:
@@ -63,7 +67,7 @@ def choose_character():
             current_team.append(character)
 
     selected_character = input("Choose your character " + str(current_team) + ":")
-    while 1 == 1:
+    while True:
         k = 0
         for character in current_team:
             if str(character.name) == str(selected_character):
@@ -72,25 +76,6 @@ def choose_character():
                 k += 1
         if k == len(current_team):
             selected_character = input("Please choose a valid character " + str(current_team) + ":")
-
-
-def los_check(place, character_origin, delta_x, delta_y):  # delta_x and delta_y = -1 or 1
-    if abs((place.y - character_origin.y) / (place.x - character_origin.x)) < 1:
-        for i in range(int((int(character_origin.x - place.x) ** 2 + int(character_origin.y - place.y) ** 2) ** 0.5)):
-            if (place.x - delta_x * i) != character_origin.x or int(place.y - delta_y * round(abs((place.y - character_origin.y) / (place.x - character_origin.x)) * i)) != character_origin.y:
-                if Variables.board[int(place.y - delta_y * ceil(abs((place.y - character_origin.y) / (place.x - character_origin.x)) * i))][int(place.x - delta_x * i)].is_cover:
-                    return
-                if Variables.board[int(place.y - delta_y * floor(abs((place.y - character_origin.y) / (place.x - character_origin.x)) * i))][int(place.x - delta_x * i)].is_cover:
-                    return
-        place.is_los = True
-    elif abs((place.y - character_origin.y) / (place.x - character_origin.x)) >= 1:
-        for i in range(int((int(character_origin.y - place.y) ** 2 + int(character_origin.x - place.x) ** 2) ** 0.5)):
-            if int(place.y - delta_y * i) != character_origin.y or int(place.x - delta_x * round(abs((place.x - character_origin.x) / (place.y - character_origin.y)) * i)) != character_origin.x:
-                if Variables.board[int(place.y - delta_y * i)][int(place.x - delta_x * ceil(abs((place.x - character_origin.x) / (place.y - character_origin.y)) * i))].is_cover:
-                    return
-                if Variables.board[int(place.y - delta_y * i)][int(place.x - delta_x * floor(abs((place.x - character_origin.x) / (place.y - character_origin.y)) * i))].is_cover:
-                    return
-        place.is_los = True
 
 
 def target_los(origin, ability_range):
@@ -124,7 +109,7 @@ def target_walk(origin, ability_range):
                             if 0 <= place[0] + 2 * x <= Variables.board_width - 1 and 0 <= place[1] + 2 * y <= Variables.board_height - 1:
                                 place[0] += x
                                 place[1] += y
-                                current_path.append(place)
+                                current_path.append(Variables.board[place[1]][place[0]])
                                 u += 2 ** 0.5
                                 Variables.board[place[1]][place[0]].is_walkable = True
                                 if u < Variables.board[place[1]][place[0]].required_stamina:
@@ -143,7 +128,7 @@ def target_walk(origin, ability_range):
                     if not Variables.board[place[1] + y][place[0] + x].is_cover:
                         place[0] += x
                         place[1] += y
-                        current_path.append(place)
+                        current_path.append(Variables.board[place[1]][place[0]])
                         u += 1
                         Variables.board[place[1]][place[0]].is_walkable = True
                         if u < Variables.board[place[1]][place[0]].required_stamina:
@@ -173,49 +158,32 @@ def turn(character):
     for row in Variables.board:
         for place in row:
             if place.is_walkable:
-                if type(place.character) == Classes.Character:
-                    place.character.name = (
-                                place.character.true_name + " " + str(place.x) + "," + str(place.y) + "(" + str(
-                            place.required_stamina) + ")")
-                else:
-                    place.name = (str(place.x) + "," + str(place.y) + "(" + str(place.required_stamina) + ")")
+                place.name = (str(place.x) + "," + str(place.y) + "(" + str(place.required_stamina) + ")")
     boardstate()
     action = input("Do you want to rush, walk or shoot (r=rush(4 stamina), (x,y)=walk, s=shoot(3 stamina), c=cancel or e=end turn:")
     while True:
         if "," in action:
             while True:
                 if Variables.board[int(action[-1])][int(action[0])].is_walkable:
-                    placement_swap(character, Variables.board[int(action[-1])][int(action[0])])
-
-                    moves = Variables.board[int(action[-1])][int(action[0])].required_stamina
-                    character.move += moves
-
-                    reset_board()
-                    boardstate()
-
-                    return moves
+                    return character.walk_movement(action, True)
                 else:
                     boardstate()
                     action = input("Do you want to rush, walk or shoot (r=rush(4 stamina), (x,y)=walk, s=shoot(3 stamina), c=cancel or e=end turn:")
         elif action == "r":
+            reset_board()
             if character.move == 0:
                 target_walk(character.coordinate, character.speed + 2)
                 for row in Variables.board:
                     for place in row:
                         if place.is_walkable:
-                            if type(place.character) == Classes.Character:
-                                place.character.name = (place.character.true_name + " " + str(place.x) + "," + str(
-                                    place.y) + "(" + str(place.required_stamina) + ")")
-                            else:
-                                place.name = (
-                                            str(place.x) + "," + str(place.y) + "(" + str(place.required_stamina) + ")")
+                            place.name = (str(place.x) + "," + str(place.y) + "(" + str(place.required_stamina) + ")")
 
                 boardstate()
 
                 destination = input("Choose your destination (x,y):")
                 while True:
                     if Variables.board[int(destination[-1])][int(destination[0])].is_walkable:
-                        placement_swap(character, Variables.board[int(destination[-1])][int(destination[0])])
+                        character.walk_movement(destination, False)
                         break
                     else:
                         boardstate()
@@ -229,13 +197,14 @@ def turn(character):
             else:
                 action = input("You can't rush if you already have moved. Choose a valid ability ((x,y)=walk, s=shoot, c=cancel or e=end turn:")
         elif action == "s":
-            if not character.shoot:
+            reset_board()
+            if not character.shoot and character.has_shield:
                 if Variables.stamina < character.weapon.stamina_cost:
                     action = input("You don't have enough stamina to shoot. Choose a valid ability ((x,y)=walk, r=rush, c=cancel or e=end turn):")
                 else:
                     return character.weapon.shoot()
             else:
-                action = input("You have already shoot. Choose a valid ability ((x,y)=walk, r=rush, c=cancel or e=end turn):")
+                action = input("You can't shoot. Choose a valid ability ((x,y)=walk, r=rush, c=cancel or e=end turn):")
         elif action == "c":
             reset_board()
             return 0
@@ -246,9 +215,12 @@ def turn(character):
             action = input("Choose a valid ability (r=rush(4 stamina), (x,y)=walk, s=shoot(3 stamina), c=cancel or e=end turn:")
 
 
-def deal_damage(shooter, weapon, target):
-    target.health -= weapon.damage
-    print(str(shooter)+" has dealt "+str(weapon.damage)+" damage to "+str(target)+"! "+str(target)+" has "+str(target.health)+" health left.")
+def deal_damage(shooter, target, damage):
+    if not target.has_shield:
+        target.health -= damage
+        print(str(shooter)+" has dealt "+str(damage)+" damage to "+str(target)+"! "+str(target)+" has "+str(target.health)+" health left.")
+    else:
+        target.has_shield = False
 
 
 def alive():
@@ -257,8 +229,5 @@ def alive():
         if character.health <= 0:
             print("Character " + str(character) + " has died.")
             living.remove(character)
-            for row in Variables.board:
-                for place in row:
-                    if place == character.name:
-                        Variables.board[Variables.board[row.index(place)]][row.index(place)].name = "_"
+            character.coordinate.character = None
     return living

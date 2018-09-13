@@ -5,12 +5,13 @@ from math import *
 
 
 class BasicWeapon:
-    def __init__(self, hit_damage=50, area_damage=30, weapon_range=4, stamina_cost=3, character=None):
+    def __init__(self, hit_damage=50, area_damage=30, weapon_range=4, stamina_cost=3, character=None, areas=[]):
         self.hit_damage = hit_damage
         self.area_damage = area_damage
         self.weapon_range = weapon_range
         self.stamina_cost = stamina_cost
         self.character = character
+        self.areas = areas
 
     def shoot(self):
         Functions.target_los(self.character.coordinate, self.weapon_range)
@@ -21,7 +22,7 @@ class BasicWeapon:
                     if type(place.character) == Classes.Character:
                         place.character.name = (place.character.true_name + " " + str(place.x) + "," + str(place.y))
                     else:
-                        place.name = (str(place.x) + "," + str(place.y) + "(" + str(place.required_stamina) + ")")
+                        place.name = (str(place.x) + "," + str(place.y))
 
         Functions.boardstate()
 
@@ -29,36 +30,69 @@ class BasicWeapon:
         while True:
             if "," in action:
                 while True:
-                    target = Variables.board[action[1]][action[0]]
-                    delta_y = (target.y - self.character.coordinate.y) / abs(target.y - self.character.coordinate.y)
-                    delta_x = (target.x - self.character.coordinate.x) / abs(target.x - self.character.coordinate.x)
-                    if abs((target.y - self.character.coordinate.y) / (target.x - self.character.coordinate.x)) < 1:
-                        for i in range(self.weapon_range):
-                            if (target.x - delta_x * i) != self.character.coordinate.x or int(target.y - delta_y * round(abs((target.y - self.character.coordinate.y) / (target.x - self.character.coordinate.x)) * i)) != self.character.coordinate.y:
-                                if Variables.board[int(target.y - delta_y * round(abs((target.y - self.character.coordinate.y) / (target.x - self.character.coordinate.x)) * i))][int(target.x - delta_x * i)].is_cover:
-                                    return
-                    elif abs((place.y - self.character.coordinate.y) / (place.x - self.character.coordinate.x)) >= 1:
-                        for i in range(int((int(self.character.coordinate.y - place.y) ** 2 + int(self.character.coordinate.x - place.x) ** 2) ** 0.5)):
-                            if int(place.y - delta_y * i) != self.character.coordinate.y or int(place.x - delta_x * round(abs((place.x - self.character.coordinate.x) / (place.y - self.character.coordinate.y)) * i)) != self.character.coordinate.x:
-                                if Variables.board[int(place.y - delta_y * i)][int(place.x - delta_x * ceil(abs((place.x - self.character.coordinate.x) / (place.y - self.character.coordinate.y)) * i))].is_cover:
-                                    return
-                                if Variables.board[int(place.y - delta_y * i)][int(place.x - delta_x * floor(abs((place.x - self.character.coordinate.x) / (place.y - self.character.coordinate.y)) * i))].is_cover:
-                                    return
-                        place.is_los = True
+                    target = Variables.board[int(action[-1])][int(action[0])]
+                    if target.y - self.character.coordinate.y != 0:
+                        delta_y = (target.y - self.character.coordinate.y) / abs(target.y - self.character.coordinate.y)
+                    if target.x - self.character.coordinate.x != 0:
+                        delta_x = (target.x - self.character.coordinate.x) / abs(target.x - self.character.coordinate.x)
 
-                        for row in Variables.board:
-                            for place in row:
-                                if place.is_shootable:
-                                    print(place.x+","+place.y)
-                                    place.name = "."
+                    if target.y - self.character.coordinate.y == 0 and target.x - self.character.coordinate.x == 0:
+                        return
 
-                        Functions.boardstate()
-                        Functions.reset_board()
+                    if target.x - self.character.coordinate.x == 0:
+                        for i in range(1, self.weapon_range + 1):
+                            if 0 < self.character.coordinate.y + delta_y * i < Variables.board_width:
+                                if Variables.board[int(self.character.coordinate.y + delta_y * i)][self.character.coordinate.x].is_los:
+                                    Variables.board[int(self.character.coordinate.y + delta_y * i)][self.character.coordinate.x].is_shootable = True
+                                else:
+                                    break
 
-                        return self.stamina_cost
-                    break
+                    elif target.y - self.character.coordinate.y == 0:
+                        for i in range(1, self.weapon_range + 1):
+                            if 0 < self.character.coordinate.x + delta_x * i < Variables.board_width:
+                                if Variables.board[self.character.coordinate.y][int(self.character.coordinate.x + delta_x * i)].is_los:
+                                    Variables.board[self.character.coordinate.y][int(self.character.coordinate.x + delta_x * i)].is_shootable = True
+                                else:
+                                    break
+
+                    elif abs((target.y - self.character.coordinate.y) / (target.x - self.character.coordinate.x)) <= 1:
+                        for i in range(1, self.weapon_range + 1):
+                            if 0 < self.character.coordinate.x + delta_x * i < Variables.board_width and 0 < int(self.character.coordinate.y + delta_y * round(abs((target.y - self.character.coordinate.y) / (target.x - self.character.coordinate.x)) * i)) < Variables.board_height:
+                                if Variables.board[int(self.character.coordinate.y + delta_y * round(abs((target.y - self.character.coordinate.y) / (target.x - self.character.coordinate.x)) * i))][int(self.character.coordinate.x + delta_x * i)].is_los:
+                                    Variables.board[int(self.character.coordinate.y  + delta_y * round(abs((target.y - self.character.coordinate.y) / (target.x - self.character.coordinate.x)) * i))][int(self.character.coordinate.x + delta_x * i)].is_shootable = True
+                                else:
+                                    break
+
+                    elif abs((target.y - self.character.coordinate.y) / (target.x - self.character.coordinate.x)) > 1:
+                        for i in range(1, self.weapon_range + 1):
+                            if 0 < self.character.coordinate.y + delta_y * i < Variables.board_height and 0 < self.character.coordinate.x + delta_x * round(abs((target.x - self.character.coordinate.x) / (target.y - self.character.coordinate.y)) * i) < Variables.board_width:
+                                if Variables.board[int(self.character.coordinate.y + delta_y * i)][int(self.character.coordinate.x + delta_x * round(abs((target.x - self.character.coordinate.x) / (target.y - self.character.coordinate.y)) * i))].is_los:
+                                    Variables.board[int(self.character.coordinate.y + delta_y * i)][int(self.character.coordinate.x + delta_x * round(abs((target.x - self.character.coordinate.x) / (target.y - self.character.coordinate.y)) * i))].is_shootable = True
+                                else:
+                                    break
+
+                    for row in Variables.board:
+                        for place in row:
+                            if place.is_shootable:
+                                self.apply_area(place)
+                                self.areas.append(place)
+
+                    Functions.reset_board()
+                    Functions.boardstate()
+
+                    self.character.shoot = True
+                    self.has_shield = False
+
+                    return self.stamina_cost
             elif action == "c":
+                Functions.reset_board()
                 return 0
             else:
+                Functions.reset_board()
                 Functions.boardstate()
                 action = input("Choose a valid target ((x,y) or c=cancel):")
+
+    def apply_area(self, place):
+        place.areas.append(self)
+        if type(place.character) == Classes.Character:
+            Functions.deal_damage(self.character, place.character, self.hit_damage)

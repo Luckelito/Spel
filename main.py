@@ -6,16 +6,19 @@ from random import *
 for character in Variables.characters_alive:
     Functions.equip(character, Classes.BasicWeapon)
 
-for i in range(int((Variables.board_height * Variables.board_width)/5)):
-    random_row = randint(1, int(Variables.board_height) - 2)
-    random_col = randint(1, int(Variables.board_width) - 2)
-    random_number = randint(1, 4)
-    Variables.board[random_row][random_col].health = random_number
-    Variables.board[random_row][random_col].name = Variables.board[random_row][random_col].health
-    Variables.board[random_row][random_col].is_cover = True
-    Variables.board[Variables.board_width - random_row][Variables.board_height - random_col].health = random_number
-    Variables.board[Variables.board_width - random_row][Variables.board_height - random_col].name = Variables.board[Variables.board_width - random_row][Variables.board_height - random_col].health
-    Variables.board[Variables.board_width - random_row][Variables.board_height - random_col].is_cover = True
+#for i in range(int((Variables.board_height * Variables.board_width)/5)):
+ #   random_row = randint(1, int(Variables.board_height) - 2)
+  #  random_col = randint(1, int(Variables.board_width) - 2)
+   # random_number = randint(1, 4)
+#    Variables.board[random_row][random_col].health = random_number
+ #   Variables.board[random_row][random_col].name = Variables.board[random_row][random_col].health
+  #  Variables.board[random_row][random_col].is_cover = True
+   # Variables.board[random_row][random_col].is_open = False
+#    Variables.board[Variables.board_width - random_row][Variables.board_height - random_col].health = random_number
+ #   Variables.board[Variables.board_width - random_row][Variables.board_height - random_col].name = Variables.board[Variables.board_width - random_row][Variables.board_height - random_col].health
+  #  Variables.board[Variables.board_width - random_row][Variables.board_height - random_col].is_cover = True
+   # Variables.board[Variables.board_width - random_row][Variables.board_height - random_col].is_open = False
+
 
 # cover_list = [[1, 4], [1, 5], [0, 6]]
 # for coordinate in cover_list:
