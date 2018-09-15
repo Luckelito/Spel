@@ -45,19 +45,19 @@ def reset_board():
         for place in row:
             place.is_los = False
             place.is_walkable = False
-            place.is_shootable = False
-            place.required_stamina = 100
+            place.is_in_range = False
+            place.required_stamina = 0
             place.path = []
             place.name = place.true_name
             if type(place.character) == Classes.Character:
                 place.character.name = place.character.true_name
 
 
-def placement_swap(character, new_coordinate):
+def placement_swap(character, destination):
     if type(character.coordinate) == Classes.Coordinate:
         character.coordinate.character = None
-    character.coordinate = new_coordinate
-    new_coordinate.character = character
+    character.coordinate = destination
+    destination.character = character
 
 
 def choose_character():
@@ -76,6 +76,13 @@ def choose_character():
                 k += 1
         if k == len(current_team):
             selected_character = input("Please choose a valid character " + str(current_team) + ":")
+
+
+def target(origin, ability_range):
+    for row in Variables.board:
+        for place in row:
+            if ((origin.x - place.x) ** 2 + (origin.y - place.y) ** 2) ** 0.5 <= ability_range:
+                place.is_in_range = True
 
 
 def target_los(origin, ability_range):
@@ -114,7 +121,9 @@ def target_walk(origin, ability_range):
                                 Variables.board[place[1]][place[0]].is_walkable = True
                                 if u < Variables.board[place[1]][place[0]].required_stamina:
                                     Variables.board[place[1]][place[0]].required_stamina = ceil(u)
-                                    Variables.board[place[1]][place[0]].path = current_path
+                                    Variables.board[place[1]][place[0]].path = []
+                                    for place_path in current_path:
+                                        Variables.board[place[1]][place[0]].path.append(place_path)
                             else:
                                 break
                         else:
@@ -133,7 +142,9 @@ def target_walk(origin, ability_range):
                         Variables.board[place[1]][place[0]].is_walkable = True
                         if u < Variables.board[place[1]][place[0]].required_stamina:
                             Variables.board[place[1]][place[0]].required_stamina = ceil(u)
-                            Variables.board[place[1]][place[0]].path = current_path
+                            Variables.board[place[1]][place[0]].path = []
+                            for place_path in current_path:
+                                Variables.board[place[1]][place[0]].path.append(place_path)
                     else:
                         break
                 else:
@@ -159,16 +170,23 @@ def turn(character):
         for place in row:
             if place.is_walkable:
                 place.name = (str(place.x) + "," + str(place.y) + "(" + str(place.required_stamina) + ")")
+
+    for row in Variables.board:
+        for place in row:
+            print("Place:" + str(place.x) + "," + str(place.y))
+            for place_path in place.path:
+                print(place_path.x, place_path.y)
     boardstate()
     action = input("Do you want to rush, walk or shoot (r=rush(4 stamina), (x,y)=walk, s=shoot(3 stamina), c=cancel or e=end turn:")
     while True:
         if "," in action:
             while True:
                 if Variables.board[int(action[-1])][int(action[0])].is_walkable:
-                    return character.walk_movement(action, True)
+                    return character.walk_movement(Variables.board[int(action[-1])][int(action[0])], True, True)
                 else:
                     boardstate()
                     action = input("Do you want to rush, walk or shoot (r=rush(4 stamina), (x,y)=walk, s=shoot(3 stamina), c=cancel or e=end turn:")
+                    break
         elif action == "r":
             reset_board()
             if character.move == 0:
@@ -176,18 +194,18 @@ def turn(character):
                 for row in Variables.board:
                     for place in row:
                         if place.is_walkable:
-                            place.name = (str(place.x) + "," + str(place.y) + "(" + str(place.required_stamina) + ")")
+                            place.name = (str(place.x) + "," + str(place.y))
 
                 boardstate()
 
-                destination = input("Choose your destination (x,y):")
+                action = input("Choose your destination (x,y):")
                 while True:
-                    if Variables.board[int(destination[-1])][int(destination[0])].is_walkable:
-                        character.walk_movement(destination, False)
+                    if Variables.board[int(action[-1])][int(action[0])].is_walkable:
+                        character.walk_movement(Variables.board[int(action[-1])][int(action[0])], False, True)
                         break
                     else:
                         boardstate()
-                        destination = input("Choose a valid destination (x,y):")
+                        action = input("Choose a valid destination (x,y):")
 
                 character.move = character.speed
 
@@ -196,6 +214,7 @@ def turn(character):
                 return 4
             else:
                 action = input("You can't rush if you already have moved. Choose a valid ability ((x,y)=walk, s=shoot, c=cancel or e=end turn:")
+
         elif action == "s":
             reset_board()
             if not character.shoot and character.has_shield:

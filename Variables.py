@@ -8,7 +8,7 @@ board = []
 for i in range(int(board_height)):
     board.append([])
     for a in range(int(board_width)):
-        board[i].append(Coordinate(true_name="_", name="_", health=0, x=a, y=i, is_cover=False, is_open=True, is_los=False, is_walkable=False, is_shootable=False, required_stamina=100, path=[], character=None, areas=[]))
+        board[i].append(Coordinate(true_name="_", name="_", health=0, x=a, y=i, is_cover=False, is_open=True, is_los=False, is_in_range=False, is_walkable=False, required_stamina=100, path=[], character=None, areas=[]))
 
 players_turn = 1
 game_turn = 0

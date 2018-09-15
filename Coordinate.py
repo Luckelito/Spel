@@ -3,8 +3,9 @@ import Functions
 from Classes import *
 from math import *
 
+
 class Coordinate:
-    def __init__(self, true_name, name, health, x, y, is_cover, is_open, is_los, is_walkable, is_shootable, required_stamina, path, character, areas):
+    def __init__(self, true_name, name, health, x, y, is_cover, is_open, is_los, is_in_range, is_walkable, required_stamina, path, character, areas):
         self.true_name = true_name
         self.name = name
         self.health = health
@@ -13,8 +14,8 @@ class Coordinate:
         self.is_cover = is_cover
         self.is_open = is_open
         self.is_los = is_los
+        self.is_in_range = is_in_range
         self.is_walkable = is_walkable
-        self.is_shootable = is_shootable
         self.required_stamina = required_stamina
         self.path = path
         self.character = character
