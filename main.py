@@ -1,23 +1,24 @@
 import Functions
-import Variables
+from Variables import *
 import Classes
 from random import *
 
-for character in Variables.characters_alive:
-    Functions.equip(character, Classes.BasicWeapon)
+for team in teams:
+    for character in team.team_members:
+        Functions.equip(character, Classes.BasicWeapon)
 
-#for i in range(int((Variables.board_height * Variables.board_width)/5)):
- #   random_row = randint(1, int(Variables.board_height) - 2)
-  #  random_col = randint(1, int(Variables.board_width) - 2)
+#for i in range(int((board_height * board_width)/5)):
+ #   random_row = randint(1, int(board_height) - 2)
+  #  random_col = randint(1, int(board_width) - 2)
    # random_number = randint(1, 4)
-#    Variables.board[random_row][random_col].health = random_number
- #   Variables.board[random_row][random_col].name = Variables.board[random_row][random_col].health
-  #  Variables.board[random_row][random_col].is_cover = True
-   # Variables.board[random_row][random_col].is_open = False
-#    Variables.board[Variables.board_width - random_row][Variables.board_height - random_col].health = random_number
- #   Variables.board[Variables.board_width - random_row][Variables.board_height - random_col].name = Variables.board[Variables.board_width - random_row][Variables.board_height - random_col].health
-  #  Variables.board[Variables.board_width - random_row][Variables.board_height - random_col].is_cover = True
-   # Variables.board[Variables.board_width - random_row][Variables.board_height - random_col].is_open = False
+#    board[random_row][random_col].health = random_number
+ #   board[random_row][random_col].name = board[random_row][random_col].health
+  #  board[random_row][random_col].is_cover = True
+   # board[random_row][random_col].is_open = False
+#    board[board_width - random_row][board_height - random_col].health = random_number
+ #   board[board_width - random_row][board_height - random_col].name = board[board_width - random_row][board_height - random_col].health
+  #  board[board_width - random_row][board_height - random_col].is_cover = True
+   # board[board_width - random_row][board_height - random_col].is_open = False
 
 
 # cover_list = [[1, 4], [1, 5], [0, 6]]
@@ -25,29 +26,33 @@ for character in Variables.characters_alive:
 #    cover = Classes.Cover(name=str(random.randint(1, 4)))
 #    Functions.placement_swap(cover, coordinate[0], coordinate[-1])
 
-Functions.starting_positions(int(Variables.board_height), int(Variables.board_width))
+Functions.starting_positions(int(board_height), int(board_width))
 
 Functions.boardstate()
 
 while True:
+    for team in teams:
+        max_stamina = 12
+        if team.is_current_team:
+            current_team = team
 
-    for character in Variables.characters_alive:
-        character.move = 0
-        character.shoot = False
+    for character in current_team.team_members_alive:
+        character.has_moved = 0
+        character.has_shot = False
+        character.has_rushed = False
+        character.has_shield = True
+        for area in character.weapon.areas:
+            area.remove(character.weapon)
+        
+    if current_team.team == 1:
+        game_turn += 1
+        
+    if current_team.team == 2 and game_turn == 1:
+        current_team.max_stamina = 15
 
-    if Variables.players_turn == 1:
-        Variables.game_turn += 1
-
-    if Variables.players_turn == 2 and Variables.game_turn == 1:
-        Variables.stamina = 15
-
-    while Variables.stamina > 0:
-        print("It is player " + str(Variables.players_turn) + "'s turn. You have " + str(Variables.stamina) + " stamina left.")
-        Variables.stamina -= Functions.turn(Functions.choose_character())
-        Functions.alive()
-
-    if Variables.players_turn > 1:
-        Variables.players_turn -= 1
-
-    else:
-        Variables.players_turn += 1
+    while current_team.used_stamina < current_team.max_stamina:
+        print("It is player " + str(current_team.team) + "'s turn. You have " + str(current_team.max_stamina - current_team.used_stamina) + " stamina left.")
+        current_team.used_stamina += Functions.turn(Functions.choose_character())
+    
+    current_team.is_current_team = False
+    teams[teams.index(current_team) - 1].is_current_team = True

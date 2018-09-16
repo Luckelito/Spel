@@ -5,13 +5,14 @@ from math import *
 
 
 class Coordinate:
-    def __init__(self, true_name, name, health, x, y, is_cover, is_open, is_los, is_in_range, is_walkable, required_stamina, path, character, areas):
+    def __init__(self, true_name, name, health, x, y, is_cover, is_capture_point, is_open, is_los, is_in_range, is_walkable, required_stamina, path, character, areas):
         self.true_name = true_name
         self.name = name
         self.health = health
         self.x = x
         self.y = y
         self.is_cover = is_cover
+        self.is_capture_point = is_capture_point
         self.is_open = is_open
         self.is_los = is_los
         self.is_in_range = is_in_range

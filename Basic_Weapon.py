@@ -88,7 +88,6 @@ class BasicWeapon:
                 Functions.reset_board()
                 return 0
             else:
-                Functions.reset_board()
                 Functions.boardstate()
                 action = input("Choose a valid target ((x,y) or c=cancel):")
 

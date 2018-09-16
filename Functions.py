@@ -59,22 +59,16 @@ def placement_swap(character, destination):
 
 
 def choose_character():
-    reset_board()
-    current_team = []
-    for character in Variables.characters_alive:
-        if character.team == Variables.players_turn:
-            current_team.append(character)
-
-    selected_character = input("Choose your character " + str(current_team) + ":")
+    selected_character = input("Choose your character " + str(Variables.current_team.team_members_alive) + ":")
     while True:
         k = 0
-        for character in current_team:
+        for character in Variables.current_team.team_members_alive:
             if str(character.name) == str(selected_character):
                 return character
             else:
                 k += 1
-        if k == len(current_team):
-            selected_character = input("Please choose a valid character " + str(current_team) + ":")
+        if k == len(Variables.current_team.team_members_alive):
+            selected_character = input("Please choose a valid character " + str(Variables.current_team.team_members_alive) + ":")
 
 
 def target(origin, ability_range):
@@ -161,10 +155,10 @@ def target_walk(origin, ability_range):
 
 def turn(character):
     reset_board()
-    if character.speed - character.move > Variables.stamina:
-        target_walk(character.coordinate, Variables.stamina)
-    elif character.speed - character.move > 0:
-        target_walk(character.coordinate, character.speed - character.move)
+    if character.speed - character.has_moved > Variables.current_team.max_stamina - Variables.current_team.used_stamina:
+        target_walk(character.coordinate, Variables.current_team.max_stamina - Variables.current_team.used_stamina)
+    elif character.speed - character.has_moved > 0:
+        target_walk(character.coordinate, character.speed - character.has_moved)
     for row in Variables.board:
         for place in row:
             if place.is_walkable:
@@ -183,7 +177,7 @@ def turn(character):
                     break
         elif action == "r":
             reset_board()
-            if character.move == 0:
+            if character.has_moved == 0:
                 target_walk(character.coordinate, character.speed + 2)
                 for row in Variables.board:
                     for place in row:
@@ -196,13 +190,13 @@ def turn(character):
                 while True:
                     if Variables.board[int(action[-1])][int(action[0])].is_walkable:
                         character.walk_movement(Variables.board[int(action[-1])][int(action[0])], False, True)
-                        character.rushed = True
+                        character.has_ry = True
                         break
                     else:
                         boardstate()
                         action = input("Choose a valid destination (x,y):")
 
-                character.move = character.speed
+                character.has_moved = character.speed
 
                 reset_board()
                 boardstate()
@@ -212,8 +206,8 @@ def turn(character):
 
         elif action == "s":
             reset_board()
-            if not character.shoot and not character.rushed and character.has_shield:
-                if Variables.stamina < character.weapon.stamina_cost:
+            if not character.has_shot and not character.has_rushed and character.has_shield:
+                if Variables.current_team.max_stamina - Variables.current_team.used_stamina < character.weapon.stamina_cost:
                     action = input("You don't have enough stamina to shoot. Choose a valid ability ((x,y)=walk, r=rush, c=cancel or e=end turn):")
                 else:
                     return character.weapon.shoot()
@@ -234,16 +228,16 @@ def deal_damage(shooter, target_of_damage, damage):
     if not target_of_damage.has_shield:
         target_of_damage.health -= damage
         print(str(shooter)+" has dealt "+str(damage)+" damage to "+str(target_of_damage)+"! "+str(target_of_damage)+" has "+str(target_of_damage.health)+" health left.")
+        alive()
     else:
         target_of_damage.has_shield = False
         print(str(target_of_damage)+" has lost their shield. " + str(target_of_damage) + " has "+str(target_of_damage.health)+" health left.")
 
 
 def alive():
-    living = Variables.characters_alive
-    for character in Variables.characters_alive:
-        if character.health <= 0:
-            print("Character " + str(character) + " has died.")
-            living.remove(character)
-            character.coordinate.character = None
-    return living
+    for team in Variables.teams:
+        for character in team.team_members_alive:
+            if character.health <= 0:
+                print("Character " + str(character) + " has died.")
+                team.team_members_alive.remove(character)
+                character.coordinate.character = None

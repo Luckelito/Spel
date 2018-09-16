@@ -9,9 +9,9 @@ class Character:
         self.speed = speed
         self.health = health
         self.team = team
-        self.move = move
-        self.shoot = shoot
-        self.rushed = rushed
+        self.has_moved = move
+        self.has_shot = shoot
+        self.has_rushed = rushed
         self.coordinate = coordinate
         self.weapon = weapon
         self.has_shield = has_shield
@@ -24,7 +24,7 @@ class Character:
             if type(destination.character) == Character:
                 if requires_stamina:
                     moves = destination.required_stamina
-                    self.move += moves
+                    self.has_moved += moves
                 else:
                     moves = 0
 
@@ -49,22 +49,26 @@ class Character:
 
                 action = input("Choose where to jump (x,y):")
                 while True:
-                    if Variables.board[int(action[-1])][int(action[0])].is_in_range and type(Variables.board[int(action[-1])][int(action[0])].character) != Character:
-                        self.jump_movement(Variables.board[int(action[-1])][int(action[0])])
-                        self.move = self.speed
-                        Functions.reset_board()
-                        return moves
+                    if Variables.board[int(action[-1])][int(action[0])].is_in_range:
+                        if type(Variables.board[int(action[-1])][int(action[0])].character) == Character:
+                            if Variables.board[int(action[-1])][int(action[0])].character == self:
+                                self.jump_movement(Variables.board[int(action[-1])][int(action[0])])
+                                self.has_moved = self.speed
+                                return moves
+                                Functions.reset_board()
+                            else:
+                                action = input("Choose a valid location (x,y):")
+                        else:
+                            self.jump_movement(Variables.board[int(action[-1])][int(action[0])])
+                            self.has_moved = self.speed
+                            Functions.reset_board()
+                            return moves
                     else:
                         action = input("Choose a valid location (x,y):")
 
-        print("Destination:" + str(destination.x) + ", " + str(destination.y))
-
-        for place in destination.path:
-            print(place.x, place.y)
-
         if requires_stamina:
             moves = destination.required_stamina
-            self.move += moves
+            self.has_moved += moves
         else:
             moves = 0
 
