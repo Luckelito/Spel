@@ -88,7 +88,7 @@ class BasicWeapon:
                     Functions.reset_board()
                     Functions.boardstate()
 
-                    self.character.shoot = True
+                    self.character.has_shot = True
                     self.has_shield = False
 
                     return self.stamina_cost

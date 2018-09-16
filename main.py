@@ -7,18 +7,25 @@ for team in teams:
     for character in team.team_members:
         Functions.equip(character, Classes.BasicWeapon)
 
-for i in range(int((board_height * board_width)/5)):
+for i in range(int((board_height * board_width)/10)):  # covers
     random_row = randint(1, int(board_height) - 2)
     random_col = randint(1, int(board_width) - 2)
     random_number = randint(1, 4)
     board[random_row][random_col].health = random_number
-    board[random_row][random_col].name = board[random_row][random_col].health
     board[random_row][random_col].is_cover = True
     board[random_row][random_col].is_open = False
     board[board_width - random_row][board_height - random_col].health = random_number
     board[board_width - random_row][board_height - random_col].name = board[board_width - random_row][board_height - random_col].health
     board[board_width - random_row][board_height - random_col].is_cover = True
     board[board_width - random_row][board_height - random_col].is_open = False
+
+
+for i in range(-1, 2):  # capture points
+    for j in range(-1, 2):
+        Variables.board[int(board_height / 2 + i)][int(board_width / 2 + j)].is_capture_point = True
+        Variables.board[int(board_height / 2 + i)][int(board_width / 2 + j)].is_cover = False
+        Variables.board[int(board_height / 2 + i)][int(board_width / 2 + j)].health = 0
+        Variables.board[int(board_height / 2 + i)][int(board_width / 2 + j)].name = "|_|"
 
 
 # cover_list = [[1, 4], [1, 5], [0, 6]]
