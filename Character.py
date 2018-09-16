@@ -3,7 +3,7 @@ import Functions
 import Variables
 
 class Character:
-    def __init__(self, true_name, name, speed, health, team, move, shoot, coordinate, weapon, has_shield):
+    def __init__(self, true_name, name, speed, health, team, move, shoot, rushed, coordinate, weapon, has_shield):
         self.true_name = true_name
         self.name = name
         self.speed = speed
@@ -11,6 +11,7 @@ class Character:
         self.team = team
         self.move = move
         self.shoot = shoot
+        self.rushed = rushed
         self.coordinate = coordinate
         self.weapon = weapon
         self.has_shield = has_shield

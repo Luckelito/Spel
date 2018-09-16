@@ -46,8 +46,6 @@ def reset_board():
             place.is_los = False
             place.is_walkable = False
             place.is_in_range = False
-            place.required_stamina = 0
-            place.path = []
             place.name = place.true_name
             if type(place.character) == Classes.Character:
                 place.character.name = place.character.true_name
@@ -61,6 +59,7 @@ def placement_swap(character, destination):
 
 
 def choose_character():
+    reset_board()
     current_team = []
     for character in Variables.characters_alive:
         if character.team == Variables.players_turn:
@@ -161,7 +160,7 @@ def target_walk(origin, ability_range):
 
 
 def turn(character):
-    boardstate()
+    reset_board()
     if character.speed - character.move > Variables.stamina:
         target_walk(character.coordinate, Variables.stamina)
     elif character.speed - character.move > 0:
@@ -171,11 +170,6 @@ def turn(character):
             if place.is_walkable:
                 place.name = (str(place.x) + "," + str(place.y) + "(" + str(place.required_stamina) + ")")
 
-    for row in Variables.board:
-        for place in row:
-            print("Place:" + str(place.x) + "," + str(place.y))
-            for place_path in place.path:
-                print(place_path.x, place_path.y)
     boardstate()
     action = input("Do you want to rush, walk or shoot (r=rush(4 stamina), (x,y)=walk, s=shoot(3 stamina), c=cancel or e=end turn:")
     while True:
@@ -202,6 +196,7 @@ def turn(character):
                 while True:
                     if Variables.board[int(action[-1])][int(action[0])].is_walkable:
                         character.walk_movement(Variables.board[int(action[-1])][int(action[0])], False, True)
+                        character.rushed = True
                         break
                     else:
                         boardstate()
@@ -217,7 +212,7 @@ def turn(character):
 
         elif action == "s":
             reset_board()
-            if not character.shoot and character.has_shield:
+            if not character.shoot and not character.rushed and character.has_shield:
                 if Variables.stamina < character.weapon.stamina_cost:
                     action = input("You don't have enough stamina to shoot. Choose a valid ability ((x,y)=walk, r=rush, c=cancel or e=end turn):")
                 else:
@@ -234,12 +229,14 @@ def turn(character):
             action = input("Choose a valid ability (r=rush(4 stamina), (x,y)=walk, s=shoot(3 stamina), c=cancel or e=end turn:")
 
 
-def deal_damage(shooter, target, damage):
-    if not target.has_shield:
-        target.health -= damage
-        print(str(shooter)+" has dealt "+str(damage)+" damage to "+str(target)+"! "+str(target)+" has "+str(target.health)+" health left.")
+def deal_damage(shooter, target_of_damage, damage):
+    reset_board()
+    if not target_of_damage.has_shield:
+        target_of_damage.health -= damage
+        print(str(shooter)+" has dealt "+str(damage)+" damage to "+str(target_of_damage)+"! "+str(target_of_damage)+" has "+str(target_of_damage.health)+" health left.")
     else:
-        target.has_shield = False
+        target_of_damage.has_shield = False
+        print(str(target_of_damage)+" has lost their shield. " + str(target_of_damage) + " has "+str(target_of_damage.health)+" health left.")
 
 
 def alive():
