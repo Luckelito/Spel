@@ -59,6 +59,7 @@ def placement_swap(character, destination):
 
 
 def choose_character():
+    print(Variables.current_team.team)
     selected_character = input("Choose your character " + str(Variables.current_team.team_members_alive) + ":")
     while True:
         k = 0
@@ -169,8 +170,8 @@ def turn(character):
     while True:
         if "," in action:
             while True:
-                if Variables.board[int(action[-1])][int(action[0])].is_walkable:
-                    return character.walk_movement(Variables.board[int(action[-1])][int(action[0])], True, True)
+                if Variables.board[int(action.split(",")[-1])][int(action.split(",")[0])].is_walkable:
+                    return character.walk_movement(Variables.board[int(action.split(",")[-1])][int(action.split(",")[0])], True, True)
                 else:
                     boardstate()
                     action = input("Do you want to rush, walk or shoot (r=rush(4 stamina), (x,y)=walk, s=shoot(3 stamina), c=cancel or e=end turn:")
@@ -188,8 +189,8 @@ def turn(character):
 
                 action = input("Choose your destination (x,y):")
                 while True:
-                    if Variables.board[int(action[-1])][int(action[0])].is_walkable:
-                        character.walk_movement(Variables.board[int(action[-1])][int(action[0])], False, True)
+                    if Variables.board[int(action.split(",")[-1])][int(action.split(",")[0])].is_walkable:
+                        character.walk_movement(Variables.board[int(action.split(",")[-1])][int(action.split(",")[0])], False, True)
                         character.has_ry = True
                         break
                     else:
@@ -218,7 +219,7 @@ def turn(character):
             return 0
         elif action == "e":
             reset_board()
-            return 20
+            return Variables.current_team.max_stamina
         else:
             action = input("Choose a valid ability (r=rush(4 stamina), (x,y)=walk, s=shoot(3 stamina), c=cancel or e=end turn:")
 
@@ -232,6 +233,12 @@ def deal_damage(shooter, target_of_damage, damage):
     else:
         target_of_damage.has_shield = False
         print(str(target_of_damage)+" has lost their shield. " + str(target_of_damage) + " has "+str(target_of_damage.health)+" health left.")
+
+
+def damage_cover(place, damage):
+    place.health -= damage
+    if place.health <= 0:
+        place.is_cover = False
 
 
 def alive():

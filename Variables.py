@@ -1,8 +1,8 @@
 from Classes import *
 import Functions
 
-board_width = 9
-board_height = 9
+board_width = 15
+board_height = 15
 
 board = []
 for i in range(int(board_height)):

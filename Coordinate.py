@@ -33,30 +33,30 @@ class Coordinate:
 
         if self.x - character_origin.x == 0:
             for i in range(int(character_origin.y - self.y) + 1):
-                if (self.y - delta_y * i) != character_origin.y:
-                    if Variables.board[int(self.y - delta_y * i)][int(self.x)].is_cover:
+                if (self.y + delta_y * i) != character_origin.y:
+                    if Variables.board[int(self.y + delta_y * i)][int(self.x)].is_cover:
                         return
             self.is_los = True
         elif self.y - character_origin.y == 0:
             for i in range(int(character_origin.x - self.x) + 1):
-                if (self.x - delta_x * i) != character_origin.x:
-                    if Variables.board[int(self.y - i)][int(self.x - delta_x * i)].is_cover:
+                if (self.x + delta_x * i) != character_origin.x:
+                    if Variables.board[int(self.y - i)][int(self.x + delta_x * i)].is_cover:
                         return
             self.is_los = True
 
         elif abs((self.y - character_origin.y) / (self.x - character_origin.x)) < 1:
             for i in range(int((int(character_origin.x - self.x) ** 2 + int(character_origin.y - self.y) ** 2) ** 0.5)):
-                if (self.x - delta_x * i) != character_origin.x or int(self.y - delta_y * round(abs((self.y - character_origin.y) / (self.x - character_origin.x)) * i)) != character_origin.y:
-                    if Variables.board[int(self.y - delta_y * ceil(abs((self.y - character_origin.y) / (self.x - character_origin.x)) * i))][int(self.x - delta_x * i)].is_cover:
+                if (self.x + delta_x * i) != character_origin.x or int(self.y + delta_y * round(abs((self.y - character_origin.y) / (self.x - character_origin.x)) * i)) != character_origin.y:
+                    if Variables.board[int(self.y + delta_y * ceil(abs((self.y - character_origin.y) / (self.x - character_origin.x)) * i))][int(self.x + delta_x * i)].is_cover:
                         return
-                    if Variables.board[int(self.y - delta_y * floor(abs((self.y - character_origin.y) / (self.x - character_origin.x)) * i))][int(self.x - delta_x * i)].is_cover:
+                    if Variables.board[int(self.y + delta_y * floor(abs((self.y - character_origin.y) / (self.x - character_origin.x)) * i))][int(self.x + delta_x * i)].is_cover:
                         return
             self.is_los = True
         elif abs((self.y - character_origin.y) / (self.x - character_origin.x)) >= 1:
             for i in range(int((int(character_origin.y - self.y) ** 2 + int(character_origin.x - self.x) ** 2) ** 0.5)):
-                if int(self.y - delta_y * i) != character_origin.y or int(self.x - delta_x * round(abs((self.x - character_origin.x) / (self.y - character_origin.y)) * i)) != character_origin.x:
-                    if Variables.board[int(self.y - delta_y * i)][int(self.x - delta_x * ceil(abs((self.x - character_origin.x) / (self.y - character_origin.y)) * i))].is_cover:
+                if int(self.y + delta_y * i) != character_origin.y or int(self.x + delta_x * round(abs((self.x - character_origin.x) / (self.y - character_origin.y)) * i)) != character_origin.x:
+                    if Variables.board[int(self.y + delta_y * i)][int(self.x + delta_x * ceil(abs((self.x - character_origin.x) / (self.y - character_origin.y)) * i))].is_cover:
                         return
-                    if Variables.board[int(self.y - delta_y * i)][int(self.x - delta_x * floor(abs((self.x - character_origin.x) / (self.y - character_origin.y)) * i))].is_cover:
+                    if Variables.board[int(self.y + delta_y * i)][int(self.x + delta_x * floor(abs((self.x - character_origin.x) / (self.y - character_origin.y)) * i))].is_cover:
                         return
             self.is_los = True
