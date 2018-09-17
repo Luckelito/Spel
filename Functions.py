@@ -188,19 +188,23 @@ def turn(character):
 
                 action = input("Choose your destination (x,y):")
                 while True:
-                    if Variables.board[int(action.split(",")[-1])][int(action.split(",")[0])].is_walkable:
-                        character.walk_movement(Variables.board[int(action.split(",")[-1])][int(action.split(",")[0])], False, True)
-                        character.has_ry = True
-                        break
+                    if "," in action:
+                        if Variables.board[int(action.split(",")[-1])][int(action.split(",")[0])].is_walkable:
+                            character.walk_movement(Variables.board[int(action.split(",")[-1])][int(action.split(",")[0])], False, True)
+                            break
+                        else:
+                            boardstate()
+                            action = input("Choose a valid destination (x,y):")
                     else:
                         boardstate()
                         action = input("Choose a valid destination (x,y):")
 
+                character.has_rushed = True
                 character.has_moved = character.speed
 
                 reset_board()
                 boardstate()
-                return 4
+                return character.speed
             else:
                 action = input("You can't rush if you already have moved. Choose a valid ability ((x,y)=walk, s=shoot, c=cancel or e=end turn:")
 
@@ -247,3 +251,13 @@ def alive():
                 print("Character " + str(character) + " has died.")
                 team.team_members_alive.remove(character)
                 character.coordinate.character = None
+    win()
+
+
+def win():
+    for team in Variables.teams:
+        if team.points >= 5 or len(Variables.teams[Variables.teams.index(Variables.current_team) - 1].team_members_alive) == 0:
+            if len(Variables.current_team.team_members_alive) == 0:
+                print("It's a tie!")
+            else:
+                print("Team " + str(Variables.current_team.team) + " wins!")

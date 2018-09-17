@@ -15,8 +15,18 @@ class Team:
 
     def check_points(self):
         i = 0
-        for character in self.team_members:
+        j = 0
+
+        for character in self.team_members_alive:
             if character.coordinate.is_capture_point:
                 i += 1
 
-        return i
+        for character in Variables.teams[Variables.teams.index(self) - 1].team_members_alive:
+            if character.coordinate.is_capture_point:
+                j += 1
+
+        if i > 0 and j == 0:
+            self.points += 1
+
+        print("Team " + str(Variables.teams[0].team) + " has " + str(Variables.teams[0].points) + " points.")
+        print("Team " + str(Variables.teams[1].team) + " has " + str(Variables.teams[1].points) + " points.")

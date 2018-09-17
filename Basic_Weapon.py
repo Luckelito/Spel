@@ -5,7 +5,7 @@ from math import *
 
 
 class BasicWeapon:
-    def __init__(self, hit_damage=50, area_damage=30, weapon_range=4, stamina_cost=3, character=None, areas=[]):
+    def __init__(self, hit_damage=50, area_damage=30, weapon_range=6, stamina_cost=3, character=None, areas=[]):
         self.hit_damage = hit_damage
         self.area_damage = area_damage
         self.weapon_range = weapon_range

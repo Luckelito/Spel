@@ -39,7 +39,7 @@ class Character:
                         Functions.boardstate()
 
                 Functions.reset_board()
-                Functions.target(destination, 2)
+                Functions.target(destination, 3)
                 for row in Variables.board:
                     for place in row:
                         if place.is_in_range:
@@ -49,20 +49,23 @@ class Character:
 
                 action = input("Choose where to jump (x,y):")
                 while True:
-                    if Variables.board[int(action[-1])][int(action[0])].is_in_range:
-                        if type(Variables.board[int(action[-1])][int(action[0])].character) == Character:
-                            if Variables.board[int(action[-1])][int(action[0])].character == self:
+                    if "," in action:
+                        if Variables.board[int(action.split(",")[-1])][int(action.split(",")[0])].is_in_range:
+                            if type(Variables.board[int(action.split(",")[-1])][int(action.split(",")[0])].character) == Character:
+                                if Variables.board[int(action.split(",")[-1])][int(action.split(",")[0])].character == self:
+                                    self.jump_movement(Variables.board[int(action.split(",")[-1])][int(action.split(",")[0])])
+                                    self.has_moved = self.speed
+                                    return moves
+                                    Functions.reset_board()
+                                else:
+                                    action = input("Choose a valid location (x,y):")
+                            else:
                                 self.jump_movement(Variables.board[int(action[-1])][int(action[0])])
                                 self.has_moved = self.speed
-                                return moves
                                 Functions.reset_board()
-                            else:
-                                action = input("Choose a valid location (x,y):")
+                                return moves
                         else:
-                            self.jump_movement(Variables.board[int(action[-1])][int(action[0])])
-                            self.has_moved = self.speed
-                            Functions.reset_board()
-                            return moves
+                            action = input("Choose a valid location (x,y):")
                     else:
                         action = input("Choose a valid location (x,y):")
 
