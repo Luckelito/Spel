@@ -3,12 +3,14 @@ import Functions
 import Classes
 
 
-class BasicWeapon:
-    def __init__(self, hit_damage=70, weapon_range=10, stamina_cost=3, character=None):
+class SniperRifle:
+    def __init__(self, hit_damage=70, area_damage=0, weapon_range=10, stamina_cost=3, character=None, areas=[]):
         self.hit_damage = hit_damage
+        self.area_damage = area_damage
         self.weapon_range = weapon_range
         self.stamina_cost = stamina_cost
         self.character = character
+        self.areas = areas
 
     def shoot(self):
         Functions.target_los(self.character.coordinate, self.weapon_range)
@@ -27,13 +29,13 @@ class BasicWeapon:
         while True:
             if "," in action:
                 if type(Variables.board[int(action.split(",")[-1])][int(action.split(",")[0])].character) == Classes.Character:
-                    Functions.deal_damage(self.character, Variables.board[int(action.split(",")[-1])][int(action.split(",")[0])].character, self.hit_damage)
+                    Functions.deal_damage(self.character, Variables.board[int(action.split(",")[-1])][int(action.split(",")[0])].character, self.hit_damage, False)
 
                     Functions.reset_board()
                     Functions.boardstate()
 
                     self.character.has_shot = True
-                    self.has_shield = False
+                    self.character.has_shield = False
 
                     return self.stamina_cost
                 else:

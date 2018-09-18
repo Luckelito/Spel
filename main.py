@@ -7,17 +7,20 @@ for team in Variables.teams:
     for character in team.team_members:
         Functions.equip(character, Classes.BasicWeapon)
 
-for i in range(int((Variables.board_height * Variables.board_width)/10)):  # covers
-    random_row = randint(1, int(Variables.board_height) - 2)
-    random_col = randint(1, int(Variables.board_width) - 2)
-    random_number = randint(1, 4)
-    Variables.board[random_row][random_col].health = random_number
-    Variables.board[random_row][random_col].is_cover = True
-    Variables.board[random_row][random_col].is_open = False
-    Variables.board[Variables.board_width - random_row][Variables.board_height - random_col].health = random_number
-    Variables.board[Variables.board_width - random_row][Variables.board_height - random_col].name = Variables.board[Variables.board_width - random_row][Variables.board_height - random_col].health
-    Variables.board[Variables.board_width - random_row][Variables.board_height - random_col].is_cover = True
-    Variables.board[Variables.board_width - random_row][Variables.board_height - random_col].is_open = False
+Functions.equip(Variables.C, Classes.SniperRifle)
+Functions.equip(Variables.c, Classes.SniperRifle)
+
+#for i in range(int((Variables.board_height * Variables.board_width)/10)):  # covers
+#    random_row = randint(1, int(Variables.board_height) - 2)
+#    random_col = randint(1, int(Variables.board_width) - 2)
+#    random_number = randint(1, 4)
+#    Variables.board[random_row][random_col].health = random_number
+#    Variables.board[random_row][random_col].is_cover = True
+#    Variables.board[random_row][random_col].is_open = False
+#    Variables.board[Variables.board_width - random_row][Variables.board_height - random_col].health = random_number
+#    Variables.board[Variables.board_width - random_row][Variables.board_height - random_col].name = Variables.board[Variables.board_width - random_row][Variables.board_height - random_col].health
+#    Variables.board[Variables.board_width - random_row][Variables.board_height - random_col].is_cover = True
+#    Variables.board[Variables.board_width - random_row][Variables.board_height - random_col].is_open = False
 
 
 for i in range(-1, 2):  # capture points

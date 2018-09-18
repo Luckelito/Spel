@@ -10,17 +10,16 @@ for i in range(int(board_height)):
     for a in range(int(board_width)):
         board[i].append(Coordinate(true_name="_", name="_", health=0, x=a, y=i, is_cover=False, is_capture_point=False, is_open=True, is_los=False, is_in_range=False, is_walkable=False, required_stamina=100, path=[], character=None, areas=[]))
 
-team_1 = Team(team=1, is_current_team=True, team_members=[], team_members_alive=[], used_stamina=0, max_stamina=12, points=0)
-team_2 = Team(team=2, is_current_team=False, team_members=[], team_members_alive=[], used_stamina=0, max_stamina=12, points=0)
+team_1 = Team(team=1, is_current_team=True)
+team_2 = Team(team=2, is_current_team=False)
 teams = [team_1, team_2]
 
-A = Character(true_name="A", name="A", speed=4, health=100, team=team_1, move=0, shoot=False, rushed=False, coordinate=None, weapon=None, has_shield=True)
-B = Character(true_name="B", name="B", speed=4, health=100, team=team_1, move=0, shoot=False, rushed=False, coordinate=None, weapon=None, has_shield=True)
-C = Character(true_name="C", name="C", speed=4, health=100, team=team_1, move=0, shoot=False, rushed=False, coordinate=None, weapon=None, has_shield=True)
-a = Character(true_name="a", name="a", speed=4, health=100, team=team_2, move=0, shoot=False, rushed=False, coordinate=None, weapon=None, has_shield=True)
-b = Character(true_name="b", name="b", speed=4, health=100, team=team_2, move=0, shoot=False, rushed=False, coordinate=None, weapon=None, has_shield=True)
-c = Character(true_name="c", name="c", speed=4, health=100, team=team_2, move=0, shoot=False, rushed=False, coordinate=None, weapon=None, has_shield=True)
-
+A = Character(true_name="A", name="A", team=team_1)
+B = Character(true_name="B", name="B", team=team_1)
+C = Character(true_name="C", name="C", team=team_1)
+a = Character(true_name="a", name="a", team=team_2)
+b = Character(true_name="b", name="b", team=team_2)
+c = Character(true_name="c", name="c", team=team_2)
 team_1.team_members = [A, B, C]
 team_2.team_members = [a, b, c]
 team_1.team_members_alive = [A, B, C]
