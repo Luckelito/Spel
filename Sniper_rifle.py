@@ -28,14 +28,14 @@ class SniperRifle:
         action = input("Choose where you want to shoot ((x,y) or c=cancel):")
         while True:
             if "," in action:
-                if type(Variables.board[int(action.split(",")[-1])][int(action.split(",")[0])].character) == Classes.Character:
+                if type(Variables.board[int(action.split(",")[-1])][int(action.split(",")[0])].character) == Classes.Character and Variables.board[int(action.split(",")[-1])][int(action.split(",")[0])].is_los:
                     Functions.deal_damage(self.character, Variables.board[int(action.split(",")[-1])][int(action.split(",")[0])].character, self.hit_damage, False)
-
-                    Functions.reset_board()
-                    Functions.boardstate()
 
                     self.character.has_shot = True
                     self.character.has_shield = False
+
+                    Functions.reset_board()
+                    Functions.boardstate()
 
                     return self.stamina_cost
                 else:

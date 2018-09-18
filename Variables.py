@@ -20,6 +20,7 @@ C = Character(true_name="C", name="C", team=team_1)
 a = Character(true_name="a", name="a", team=team_2)
 b = Character(true_name="b", name="b", team=team_2)
 c = Character(true_name="c", name="c", team=team_2)
+
 team_1.team_members = [A, B, C]
 team_2.team_members = [a, b, c]
 team_1.team_members_alive = [A, B, C]

@@ -102,4 +102,5 @@ class BasicWeapon:
     def apply_area(self, place):
         place.areas.append(self)
         if type(place.character) == Classes.Character:
-            Functions.deal_damage(self.character, place.character, self.hit_damage, True)
+            if place.character.team == self.character.team:
+                Functions.deal_damage(self.character, place.character, self.hit_damage, True)
