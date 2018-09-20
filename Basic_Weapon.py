@@ -41,7 +41,7 @@ class BasicWeapon:
 
                     if target.x - self.character.coordinate.x == 0:
                         for i in range(1, self.weapon_range + 1):
-                            if 0 <= self.character.coordinate.y + delta_y * i < Variables.board_width:
+                            if 0 < self.character.coordinate.y + delta_y * i < Variables.board_width:
                                 if Variables.board[int(self.character.coordinate.y + delta_y * i)][self.character.coordinate.x].is_los:
                                     Variables.board[int(self.character.coordinate.y + delta_y * i)][self.character.coordinate.x].is_in_range = True
                                 elif Variables.board[int(self.character.coordinate.y + delta_y * i)][self.character.coordinate.x].is_cover:
@@ -51,7 +51,7 @@ class BasicWeapon:
 
                     elif target.y - self.character.coordinate.y == 0:
                         for i in range(1, self.weapon_range + 1):
-                            if 0 <= self.character.coordinate.x + delta_x * i < Variables.board_width:
+                            if 0 < self.character.coordinate.x + delta_x * i < Variables.board_width:
                                 if Variables.board[self.character.coordinate.y][int(self.character.coordinate.x + delta_x * i)].is_los:
                                     Variables.board[self.character.coordinate.y][int(self.character.coordinate.x + delta_x * i)].is_in_range = True
                                 elif Variables.board[self.character.coordinate.y][int(self.character.coordinate.x + delta_x * i)].is_cover:
@@ -61,7 +61,7 @@ class BasicWeapon:
 
                     elif abs((target.y - self.character.coordinate.y) / (target.x - self.character.coordinate.x)) <= 1:
                         for i in range(1, self.weapon_range + 1):
-                            if 0 <= self.character.coordinate.x + delta_x * i < Variables.board_width and 0 < int(self.character.coordinate.y + delta_y * round(abs((target.y - self.character.coordinate.y) / (target.x - self.character.coordinate.x)) * i)) < Variables.board_height:
+                            if 0 <= self.character.coordinate.x + delta_x * i < Variables.board_width and 0 <= int(self.character.coordinate.y + delta_y * round(abs((target.y - self.character.coordinate.y) / (target.x - self.character.coordinate.x)) * i)) < Variables.board_height:
                                 if Variables.board[int(self.character.coordinate.y + delta_y * round(abs((target.y - self.character.coordinate.y) / (target.x - self.character.coordinate.x)) * i))][int(self.character.coordinate.x + delta_x * i)].is_los:
                                     Variables.board[int(self.character.coordinate.y + delta_y * round(abs((target.y - self.character.coordinate.y) / (target.x - self.character.coordinate.x)) * i))][int(self.character.coordinate.x + delta_x * i)].is_in_range = True
                                 elif Variables.board[int(self.character.coordinate.y + delta_y * round(abs((target.y - self.character.coordinate.y) / (target.x - self.character.coordinate.x)) * i))][int(self.character.coordinate.x + delta_x * i)].is_cover:
@@ -71,7 +71,7 @@ class BasicWeapon:
 
                     elif abs((target.y - self.character.coordinate.y) / (target.x - self.character.coordinate.x)) > 1:
                         for i in range(1, self.weapon_range + 1):
-                            if 0 <= self.character.coordinate.y + delta_y * i < Variables.board_height and 0 < self.character.coordinate.x + delta_x * round(abs((target.x - self.character.coordinate.x) / (target.y - self.character.coordinate.y)) * i) < Variables.board_width:
+                            if 0 <= self.character.coordinate.y + delta_y * i < Variables.board_height and 0 <= self.character.coordinate.x + delta_x * round(abs((target.x - self.character.coordinate.x) / (target.y - self.character.coordinate.y)) * i) < Variables.board_width:
                                 if Variables.board[int(self.character.coordinate.y + delta_y * i)][int(self.character.coordinate.x + delta_x * round(abs((target.x - self.character.coordinate.x) / (target.y - self.character.coordinate.y)) * i))].is_los:
                                     Variables.board[int(self.character.coordinate.y + delta_y * i)][int(self.character.coordinate.x + delta_x * round(abs((target.x - self.character.coordinate.x) / (target.y - self.character.coordinate.y)) * i))].is_in_range = True
                                 elif Variables.board[int(self.character.coordinate.y + delta_y * i)][int(self.character.coordinate.x + delta_x * round(abs((target.x - self.character.coordinate.x) / (target.y - self.character.coordinate.y)) * i))].is_cover:
@@ -85,11 +85,11 @@ class BasicWeapon:
                                 self.apply_area(place)
                                 self.areas.append(place)
 
+                    self.character.has_shot = True
+                    self.character.has_shield = False
+
                     Functions.reset_board()
                     Functions.boardstate()
-
-                    self.character.has_shot = True
-                    self.has_shield = False
 
                     return self.stamina_cost
             elif action == "c":
@@ -102,4 +102,5 @@ class BasicWeapon:
     def apply_area(self, place):
         place.areas.append(self)
         if type(place.character) == Classes.Character:
-            Functions.deal_damage(self.character, place.character, self.hit_damage)
+            if place.character.team == self.character.team:
+                Functions.deal_damage(self.character, place.character, self.hit_damage, True)

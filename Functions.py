@@ -227,15 +227,16 @@ def turn(character):
             action = input("Choose a valid ability (r=rush(4 stamina), (x,y)=walk, s=shoot(3 stamina), c=cancel or e=end turn:")
 
 
-def deal_damage(shooter, target_of_damage, damage):
+def deal_damage(shooter, target_of_damage, damage, can_break_shield):
     reset_board()
     if not target_of_damage.has_shield:
         target_of_damage.health -= damage
         print(str(shooter)+" has dealt "+str(damage)+" damage to "+str(target_of_damage)+"! "+str(target_of_damage)+" has "+str(target_of_damage.health)+" health left.")
         alive()
     else:
-        target_of_damage.has_shield = False
-        print(str(target_of_damage)+" has lost their shield. " + str(target_of_damage) + " has "+str(target_of_damage.health)+" health left.")
+        if can_break_shield:
+            target_of_damage.has_shield = False
+            print(str(target_of_damage)+" has lost their shield. " + str(target_of_damage) + " has "+str(target_of_damage.health)+" health left.")
 
 
 def damage_cover(place, damage):

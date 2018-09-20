@@ -3,7 +3,7 @@ import Functions
 import Variables
 
 class Character:
-    def __init__(self, true_name, name, speed, health, team, move, shoot, rushed, coordinate, weapon, has_shield):
+    def __init__(self, true_name=None, name=None, speed=4, health=100, team=None, move=0, shoot=False, rushed=False, coordinate=None, weapon=None, has_shield=True, character_jump_range=3, character_jump_damage=10):
         self.true_name = true_name
         self.name = name
         self.speed = speed
@@ -15,6 +15,8 @@ class Character:
         self.coordinate = coordinate
         self.weapon = weapon
         self.has_shield = has_shield
+        self.character_jump_range = character_jump_range
+        self.character_jump_damage = character_jump_damage
 
     def __repr__(self):
         return self.name
@@ -79,7 +81,7 @@ class Character:
             if len(place.areas) > 0:
                 for area in place.areas:
                     if area.character.team != self.team:
-                        Functions.deal_damage(area.character, self, area.area_damage)
+                        Functions.deal_damage(area.character, self, area.area_damage, True)
             if type(place.character) != Character:
                 Functions.placement_swap(self, place)
                 Functions.reset_board()
@@ -91,7 +93,7 @@ class Character:
         if len(destination.areas) > 0:
             for area in destination.areas:
                 if area.character.team != self.team:
-                    Functions.deal_damage(area.character, self, area.area_damage)
+                    Functions.deal_damage(area.character, self, area.area_damage, True)
         Functions.placement_swap(self, destination)
         Functions.reset_board()
         Functions.boardstate()

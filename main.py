@@ -3,9 +3,12 @@ import Variables
 import Classes
 from random import *
 
-for team in Variables.teams:
-    for character in team.team_members:
-        Functions.equip(character, Classes.BasicWeapon)
+Functions.equip(Variables.A, Classes.BasicWeapon)
+Functions.equip(Variables.a, Classes.BasicWeapon)
+Functions.equip(Variables.B, Classes.CircleWeapon)
+Functions.equip(Variables.a, Classes.CircleWeapon)
+Functions.equip(Variables.C, Classes.SniperRifle)
+Functions.equip(Variables.c, Classes.SniperRifle)
 
 for i in range(int((Variables.board_height * Variables.board_width)/10)):  # covers
     random_row = randint(1, int(Variables.board_height) - 2)
@@ -18,7 +21,6 @@ for i in range(int((Variables.board_height * Variables.board_width)/10)):  # cov
     Variables.board[Variables.board_width - random_row][Variables.board_height - random_col].name = Variables.board[Variables.board_width - random_row][Variables.board_height - random_col].health
     Variables.board[Variables.board_width - random_row][Variables.board_height - random_col].is_cover = True
     Variables.board[Variables.board_width - random_row][Variables.board_height - random_col].is_open = False
-
 
 for i in range(-1, 2):  # capture points
     for j in range(-1, 2):

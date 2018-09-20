@@ -4,7 +4,7 @@ import Variables
 
 
 class Team:
-    def __init__(self, team, is_current_team, team_members, team_members_alive, used_stamina, max_stamina, points):
+    def __init__(self, team=None, is_current_team=False, team_members=[], team_members_alive=[], used_stamina=0, max_stamina=12, points=0):
         self.team = team
         self.is_current_team = is_current_team
         self.team_members = team_members
