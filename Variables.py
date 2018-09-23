@@ -1,7 +1,7 @@
 from Classes import *
 import Functions
 
-board_width = 15
+board_width = 21
 board_height = 15
 
 board = []
@@ -9,6 +9,17 @@ for i in range(int(board_height)):
     board.append([])
     for a in range(int(board_width)):
         board[i].append(Coordinate(true_name="_", name="_", health=0, x=a, y=i, is_cover=False, is_capture_point=False, is_open=True, is_los=False, is_in_range=False, is_walkable=False, required_stamina=100, path=[], character=None, areas=[]))
+
+graphic_width = 18
+graphic_height = 10
+camera_movement_y = int(board_height/2) - 5
+camera_movement_x = 0
+
+graphic_board = []
+for i in range(int(graphic_height)):
+    graphic_board.append([])
+    for a in range(int(graphic_width)):
+        graphic_board[i].append(None)
 
 team_1 = Team(team=1, is_current_team=True)
 team_2 = Team(team=2, is_current_team=False)

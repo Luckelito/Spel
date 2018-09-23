@@ -40,6 +40,11 @@ def boardstate():
         print("\n")
 
 
+def set_graphic_board():
+    for i in range(len(Variables.graphic_board)):
+        for j in range(len(Variables.graphic_board[i])):
+            Variables.graphic_board[i][j] = Variables.board[i + Variables.camera_movement_y][j + Variables.camera_movement_x]
+
 def reset_board():
     for row in Variables.board:
         for place in row:
