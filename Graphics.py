@@ -69,33 +69,33 @@ while not done:
                         team_2_areas += 1
 
                     if team_1_areas > 0 and team_2_areas > 0:
-                        tile = get_image('C:/Users/Lukas/Desktop/Spel sprites/area_purple.png')
+                        tile = get_image('Spel sprites/area_purple.png')
                     elif team_1_areas > 0 and team_2_areas == 0:
-                        tile = get_image('C:/Users/Lukas/Desktop/Spel sprites/area_blue.png')
+                        tile = get_image('Spel sprites/area_blue.png')
                     elif team_1_areas == 0 and team_2_areas > 0:
-                        tile = get_image('C:/Users/Lukas/Desktop/Spel sprites/area_blue.png')
+                        tile = get_image('Spel sprites/area_blue.png')
             else:
-                tile = get_image('C:/Users/Lukas/Desktop/Spel sprites/tile.png')
+                tile = get_image('Spel sprites/tile.png')
 
             tile = pygame.transform.scale(tile, (100, 100))
             screen.blit(tile, (60 + i * 100, 40 + j * 100))
 
             if place.is_cover:
-                cover = get_image('C:/Users/Lukas/Desktop/Spel sprites/cover_' + str(place.health) + '.png')
+                cover = get_image('Spel sprites/cover_' + str(place.health) + '.png')
                 cover = pygame.transform.scale(cover, (100, 100))
                 screen.blit(cover, (60 + i * 100, 40 + j * 100))
 
             if place.is_capture_point:
-                capture_point = get_image('C:/Users/Lukas/Desktop/Spel sprites/capture_point.png')
+                capture_point = get_image('Spel sprites/capture_point.png')
                 capture_point = pygame.transform.scale(capture_point, (100, 100))
                 screen.blit(capture_point, (60 + i * 100, 40 + j * 100))
 
             if type(place.character) == Classes.Character:
-                capture_point = get_image('C:/Users/Lukas/Desktop/Spel sprites/character_' + str(place.character.team.team) + '.png')
+                capture_point = get_image('Spel sprites/character_' + str(place.character.team.team) + '.png')
                 capture_point = pygame.transform.scale(capture_point, (100, 100))
                 screen.blit(capture_point, (60 + i * 100, 40 + j * 100))
                 if place.character.has_shield:
-                    shield = get_image('C:/Users/Lukas/Desktop/Spel sprites/shield.png')
+                    shield = get_image('Spel sprites/shield.png')
                     shield = pygame.transform.scale(shield, (100, 100))
                     screen.blit(shield, (60 + i * 100, 40 + j * 100))
 
