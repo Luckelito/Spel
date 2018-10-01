@@ -11,8 +11,10 @@ class Coordinate:
         self.health = health
         self.x = x
         self.y = y
-        self.x_graphics = 0
-        self.y_graphics = 0
+        self.graphic_x_start = 0
+        self.graphic_x_end = 0
+        self.graphic_y_start = 0
+        self.graphic_y_end = 0
         self.is_cover = is_cover
         self.is_capture_point = is_capture_point
         self.is_open = is_open

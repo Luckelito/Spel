@@ -35,6 +35,8 @@ Functions.starting_positions(int(Variables.board_height), int(Variables.board_wi
 clock = pygame.time.Clock()
 
 _image_library = {}
+
+
 def get_image(path):
     global _image_library
     image = _image_library.get(path)
@@ -43,6 +45,7 @@ def get_image(path):
         image = pygame.image.load(canonicalized_path)
         _image_library[path] = image
     return image
+
 
 pygame.init()
 screen = pygame.display.set_mode((1920, 1080))
