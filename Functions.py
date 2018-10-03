@@ -1,6 +1,8 @@
 from math import *
 from itertools import *
 from random import *
+import pygame
+import os
 import Variables
 import Classes
 
@@ -55,6 +57,7 @@ def set_graphic_board():
             Variables.graphic_board[i][j].graphic_x_end = 160 + i * 100
             Variables.graphic_board[i][j].graphic_y_start = 40 + j * 100
             Variables.graphic_board[i][j].graphic_y_end = 140 + j * 100
+
 
 
 def reset_board():
@@ -182,66 +185,62 @@ def turn(character):
                 place.name = (str(place.x) + "," + str(place.y) + "(" + str(place.required_stamina) + ")")
 
     boardstate()
-    action = input("Do you want to rush, walk or shoot (r=rush(4 stamina), (x,y)=walk, s=shoot(3 stamina), c=cancel or e=end turn:")
-    while True:
-        if "," in action:
+    pressed_key = pygame.key.get_pressed()
+    pressed_mouse = pygame.mouse.get_pressed()
+    mouse_pos = pygame.mouse.get_pos()
+
+    if pressed_mouse == 1:
+        if Variables.board[int(mouse_pos[-1])][int(mouse_pos[0])].is_walkable:
+            return character.walk_movement(Variables.board[int(mouse_pos[-1])][int(mouse_pos[0])], True, True)
+
+    elif pressed_key == KEY:
+        reset_board()
+        if character.has_moved == 0:
+            target_walk(character.coordinate, character.speed + 2)
+            for row in Variables.board:
+                for place in row:
+                    if place.is_walkable:
+                        place.name = (str(place.x) + "," + str(place.y))
+
+            boardstate()
+
+            action = input("Choose your destination (x,y):")
             while True:
-                if Variables.board[int(action.split(",")[-1])][int(action.split(",")[0])].is_walkable:
-                    return character.walk_movement(Variables.board[int(action.split(",")[-1])][int(action.split(",")[0])], True, True)
-                else:
-                    boardstate()
-                    action = input("Do you want to rush, walk or shoot (r=rush(4 stamina), (x,y)=walk, s=shoot(3 stamina), c=cancel or e=end turn:")
-                    break
-        elif action == "r":
-            reset_board()
-            if character.has_moved == 0:
-                target_walk(character.coordinate, character.speed + 2)
-                for row in Variables.board:
-                    for place in row:
-                        if place.is_walkable:
-                            place.name = (str(place.x) + "," + str(place.y))
-
-                boardstate()
-
-                action = input("Choose your destination (x,y):")
-                while True:
-                    if "," in action:
-                        if Variables.board[int(action.split(",")[-1])][int(action.split(",")[0])].is_walkable:
-                            character.walk_movement(Variables.board[int(action.split(",")[-1])][int(action.split(",")[0])], False, True)
-                            break
-                        else:
-                            boardstate()
-                            action = input("Choose a valid destination (x,y):")
+                if "," in action:
+                    if Variables.board[int(action.split(",")[-1])][int(action.split(",")[0])].is_walkable:
+                        character.walk_movement(Variables.board[int(action.split(",")[-1])][int(action.split(",")[0])], False, True)
+                        break
                     else:
                         boardstate()
                         action = input("Choose a valid destination (x,y):")
-
-                character.has_rushed = True
-                character.has_moved = character.speed
-
-                reset_board()
-                boardstate()
-                return character.speed
-            else:
-                action = input("You can't rush if you already have moved. Choose a valid ability ((x,y)=walk, s=shoot, c=cancel or e=end turn:")
-
-        elif action == "s":
-            reset_board()
-            if not character.has_shot and not character.has_rushed and character.has_shield:
-                if Variables.current_team.max_stamina - Variables.current_team.used_stamina < character.weapon.stamina_cost:
-                    action = input("You don't have enough stamina to shoot. Choose a valid ability ((x,y)=walk, r=rush, c=cancel or e=end turn):")
                 else:
-                    return character.weapon.shoot()
+                    boardstate()
+                    action = input("Choose a valid destination (x,y):")
+
+            character.has_rushed = True
+            character.has_moved = character.speed
+
+            reset_board()
+            boardstate()
+            return character.speed
+
+    elif pressed_key == "s":
+        reset_board()
+        if not character.has_shot and not character.has_rushed and character.has_shield:
+            if Variables.current_team.max_stamina - Variables.current_team.used_stamina < character.weapon.stamina_cost:
+                action = input("You don't have enough stamina to shoot. Choose a valid ability ((x,y)=walk, r=rush, c=cancel or e=end turn):")
             else:
-                action = input("You can't shoot. Choose a valid ability ((x,y)=walk, r=rush, c=cancel or e=end turn):")
-        elif action == "c":
-            reset_board()
-            return 0
-        elif action == "e":
-            reset_board()
-            return Variables.current_team.max_stamina
+                return character.weapon.shoot()
         else:
-            action = input("Choose a valid ability (r=rush(4 stamina), (x,y)=walk, s=shoot(3 stamina), c=cancel or e=end turn:")
+            action = input("You can't shoot. Choose a valid ability ((x,y)=walk, r=rush, c=cancel or e=end turn):")
+    elif action == "c":
+        reset_board()
+        return 0
+    elif action == "e":
+        reset_board()
+        return Variables.current_team.max_stamina
+    else:
+        action = input("Choose a valid ability (r=rush(4 stamina), (x,y)=walk, s=shoot(3 stamina), c=cancel or e=end turn:")
 
 
 def deal_damage(shooter, target_of_damage, damage, can_break_shield):
