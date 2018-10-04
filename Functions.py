@@ -20,28 +20,6 @@ def starting_positions(board_height, board_width):
     placement_swap(Variables.c, Variables.board[int(board_height/2 - 1)][int(board_width - 1)])
 
 
-def boardstate():
-    inverted_board = reversed(Variables.board)
-    print("")
-    for row in inverted_board:
-        for place in row:
-            if type(place.character) == Classes.Character:
-                if place.character.has_shield:
-                    print((" " * int(floor(5 - (len(place.character.name) / 2))) + "(" + place.character.name + ")" + ceil(4 - (len(place.character.name) / 2)) * " "), end="")
-                else:
-                    print((" " * int(floor(6 - (len(place.character.name) / 2))) + place.character.name + ceil(5 - (len(place.character.name) / 2)) * " "), end="")
-            elif len(place.areas) > 0:
-                print((" " * int(floor(6 - (len(place.areas) / 2))) + "." * len(place.areas) + ceil(5 - (len(place.areas) / 2)) * " "), end="")
-            elif place.is_cover:
-                print((" " * 5 + str(place.health) + 5 * " "), end="")
-            elif "," in place.name:
-                index = place.name.index(",")
-                print(" " * (5 - index) + place.name + " " * (6 - (len(place.name) - index)), end="")
-            else:
-                print((" " * int(floor(6 - (len(place.name) / 2))) + place.name + ceil(5 - (len(place.name) / 2)) * " "), end="")
-        print("\n")
-
-
 def set_graphic_board():
     for row in Variables.board:
         for place in row:
@@ -53,11 +31,10 @@ def set_graphic_board():
     for i in range(len(Variables.graphic_board)):
         for j in range(len(Variables.graphic_board[i])):
             Variables.graphic_board[i][j] = Variables.board[i + Variables.camera_movement_y][j + Variables.camera_movement_x]
-            Variables.graphic_board[i][j].graphic_x_start = 60 + i * 100
-            Variables.graphic_board[i][j].graphic_x_end = 160 + i * 100
-            Variables.graphic_board[i][j].graphic_y_start = 40 + j * 100
-            Variables.graphic_board[i][j].graphic_y_end = 140 + j * 100
-
+            Variables.graphic_board[i][j].graphic_x_start = 60 + j * 100
+            Variables.graphic_board[i][j].graphic_x_end = 160 + j * 100
+            Variables.graphic_board[i][j].graphic_y_start = 40 + i * 100
+            Variables.graphic_board[i][j].graphic_y_end = 140 + i * 100
 
 
 def reset_board():
@@ -76,19 +53,6 @@ def placement_swap(character, destination):
         character.coordinate.character = None
     character.coordinate = destination
     destination.character = character
-
-
-def choose_character():
-    selected_character = input("Choose your character " + str(Variables.current_team.team_members_alive) + ":")
-    while True:
-        k = 0
-        for character in Variables.current_team.team_members_alive:
-            if str(character.name) == str(selected_character):
-                return character
-            else:
-                k += 1
-        if k == len(Variables.current_team.team_members_alive):
-            selected_character = input("Please choose a valid character " + str(Variables.current_team.team_members_alive) + ":")
 
 
 def target(origin, ability_range):
@@ -173,8 +137,28 @@ def target_walk(origin, ability_range):
     return legal_targets
 
 
+def choose_character():
+    pressed_mouse = pygame.mouse.get_pressed()
+    mouse_pos = pygame.mouse.get_pos()
+
+    if pressed_mouse[0]:
+        for row in Variables.graphic_board:
+            for place in row:
+                if place.graphic_x_start <= mouse_pos[0] < place.graphic_x_end and place.graphic_y_start <= mouse_pos[1] < place.graphic_y_end:
+                    if type(place.character) == Classes.Character:
+                        if place.character.team == Variables.current_team:
+                            Variables.current_character = place.character
+
+    return Variables.current_character
+
+
 def turn(character):
     reset_board()
+
+    if type(character) != Classes.Character:
+        return 0
+
+
     if character.speed - character.has_moved > Variables.current_team.max_stamina - Variables.current_team.used_stamina:
         target_walk(character.coordinate, Variables.current_team.max_stamina - Variables.current_team.used_stamina)
     elif character.speed - character.has_moved > 0:
@@ -184,16 +168,12 @@ def turn(character):
             if place.is_walkable:
                 place.name = (str(place.x) + "," + str(place.y) + "(" + str(place.required_stamina) + ")")
 
-    boardstate()
+    
     pressed_key = pygame.key.get_pressed()
     pressed_mouse = pygame.mouse.get_pressed()
     mouse_pos = pygame.mouse.get_pos()
 
-    if pressed_mouse == 1:
-        if Variables.board[int(mouse_pos[-1])][int(mouse_pos[0])].is_walkable:
-            return character.walk_movement(Variables.board[int(mouse_pos[-1])][int(mouse_pos[0])], True, True)
-
-    elif pressed_key == KEY:
+    if pressed_key[pygame.K_r]:
         reset_board()
         if character.has_moved == 0:
             target_walk(character.coordinate, character.speed + 2)
@@ -202,45 +182,44 @@ def turn(character):
                     if place.is_walkable:
                         place.name = (str(place.x) + "," + str(place.y))
 
-            boardstate()
+            
 
-            action = input("Choose your destination (x,y):")
-            while True:
-                if "," in action:
-                    if Variables.board[int(action.split(",")[-1])][int(action.split(",")[0])].is_walkable:
-                        character.walk_movement(Variables.board[int(action.split(",")[-1])][int(action.split(",")[0])], False, True)
-                        break
-                    else:
-                        boardstate()
-                        action = input("Choose a valid destination (x,y):")
-                else:
-                    boardstate()
-                    action = input("Choose a valid destination (x,y):")
+            for row in Variables.board:
+                for place in row:
+                    if place.graphic_x_start <= mouse_pos[0] < place.graphic_x_end and place.graphic_y_start <= mouse_pos[1] < place.graphic_y_end:
+                        if Variables.board[int(place.y)][int(place.x)].is_walkable:
+                            return character.walk_movement(Variables.board[int(place.y)][int(place.x)], True, True)
 
             character.has_rushed = True
             character.has_moved = character.speed
 
             reset_board()
-            boardstate()
+            
             return character.speed
 
-    elif pressed_key == "s":
+    elif pressed_mouse[0]:
+        for row in Variables.board:
+            for place in row:
+                if place.graphic_x_start <= mouse_pos[0] < place.graphic_x_end and place.graphic_y_start <= mouse_pos[1] < place.graphic_y_end:
+                    if Variables.board[int(place.y)][int(place.x)].is_walkable:
+                        return character.walk_movement(Variables.board[int(place.y)][int(place.x)], True, True)
+
+    elif pressed_key[pygame.K_s]:
         reset_board()
         if not character.has_shot and not character.has_rushed and character.has_shield:
-            if Variables.current_team.max_stamina - Variables.current_team.used_stamina < character.weapon.stamina_cost:
-                action = input("You don't have enough stamina to shoot. Choose a valid ability ((x,y)=walk, r=rush, c=cancel or e=end turn):")
-            else:
+            if Variables.current_team.max_stamina - Variables.current_team.used_stamina > character.weapon.stamina_cost:
                 return character.weapon.shoot()
-        else:
-            action = input("You can't shoot. Choose a valid ability ((x,y)=walk, r=rush, c=cancel or e=end turn):")
-    elif action == "c":
+
+    elif pressed_key[pygame.K_ESCAPE]:
         reset_board()
+        Variables.current_character = None
         return 0
-    elif action == "e":
+
+    elif pressed_key[pygame.K_e]:
         reset_board()
         return Variables.current_team.max_stamina
-    else:
-        action = input("Choose a valid ability (r=rush(4 stamina), (x,y)=walk, s=shoot(3 stamina), c=cancel or e=end turn:")
+
+    return 0
 
 
 def deal_damage(shooter, target_of_damage, damage, can_break_shield):

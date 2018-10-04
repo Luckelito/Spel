@@ -39,3 +39,4 @@ team_2.team_members_alive = [a, b, c]
 
 game_turn = 0
 current_team = team_1
+current_character = None

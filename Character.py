@@ -38,7 +38,6 @@ class Character:
                     if type(place.character) != Character:
                         Functions.placement_swap(self, place)
                         Functions.reset_board()
-                        Functions.boardstate()
 
                 Functions.reset_board()
                 Functions.target(destination, 3)
@@ -46,8 +45,6 @@ class Character:
                     for place in row:
                         if place.is_in_range:
                             place.name = (str(place.x) + "," + str(place.y))
-
-                Functions.boardstate()
 
                 action = input("Choose where to jump (x,y):")
                 while True:
@@ -58,7 +55,6 @@ class Character:
                                     self.jump_movement(Variables.board[int(action.split(",")[-1])][int(action.split(",")[0])])
                                     self.has_moved = self.speed
                                     return moves
-                                    Functions.reset_board()
                                 else:
                                     action = input("Choose a valid location (x,y):")
                             else:
@@ -85,7 +81,6 @@ class Character:
             if type(place.character) != Character:
                 Functions.placement_swap(self, place)
                 Functions.reset_board()
-                Functions.boardstate()
 
         return moves
 
@@ -96,4 +91,3 @@ class Character:
                     Functions.deal_damage(area.character, self, area.area_damage, True)
         Functions.placement_swap(self, destination)
         Functions.reset_board()
-        Functions.boardstate()
