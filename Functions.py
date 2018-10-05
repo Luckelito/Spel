@@ -138,51 +138,51 @@ def target_walk(origin, ability_range):
 
 
 def choose_character():
+    pressed_key = pygame.key.get_pressed()
     pressed_mouse = pygame.mouse.get_pressed()
     mouse_pos = pygame.mouse.get_pos()
 
-    if pressed_mouse[0]:
-        for row in Variables.graphic_board:
-            for place in row:
-                if place.graphic_x_start <= mouse_pos[0] < place.graphic_x_end and place.graphic_y_start <= mouse_pos[1] < place.graphic_y_end:
-                    if type(place.character) == Classes.Character:
-                        if place.character.team == Variables.current_team:
-                            Variables.current_character = place.character
+    if Variables.current_character == None:
+        if pressed_mouse[0]:
+            for row in Variables.graphic_board:
+                for place in row:
+                    if place.graphic_x_start <= mouse_pos[0] < place.graphic_x_end and place.graphic_y_start <= mouse_pos[1] < place.graphic_y_end:
+                        if type(place.character) == Classes.Character:
+                            if place.character.team == Variables.current_team:
+                                Variables.current_character = place.character
+
+    elif pressed_key[pygame.K_TAB]:
+        if Variables.current_character.team.team_members_alive.index(Variables.current_character) < len(Variables.current_character.team.team_members_alive) - 1:
+            Variables.current_character = Variables.current_character.team.team_members_alive[Variables.current_character.team.team_members_alive.index(Variables.current_character) + 1]
+        else:
+            Variables.current_character = Variables.current_character.team.team_members_alive[0]
 
     return Variables.current_character
 
 
 def turn(character):
-    reset_board()
-
     if type(character) != Classes.Character:
         return 0
 
+    if not character.is_shooting and not character.is_rushing and not character.is_jumping:
+        if character.speed - character.has_moved > Variables.current_team.max_stamina - Variables.current_team.used_stamina:
+            target_walk(character.coordinate, Variables.current_team.max_stamina - Variables.current_team.used_stamina)
+        elif character.speed - character.has_moved > 0:
+            target_walk(character.coordinate, character.speed - character.has_moved)
 
-    if character.speed - character.has_moved > Variables.current_team.max_stamina - Variables.current_team.used_stamina:
-        target_walk(character.coordinate, Variables.current_team.max_stamina - Variables.current_team.used_stamina)
-    elif character.speed - character.has_moved > 0:
-        target_walk(character.coordinate, character.speed - character.has_moved)
-    for row in Variables.board:
-        for place in row:
-            if place.is_walkable:
-                place.name = (str(place.x) + "," + str(place.y) + "(" + str(place.required_stamina) + ")")
-
-    
     pressed_key = pygame.key.get_pressed()
     pressed_mouse = pygame.mouse.get_pressed()
     mouse_pos = pygame.mouse.get_pos()
 
-    if pressed_key[pygame.K_r]:
+    if character.is_shooting:
+        if not character.has_shot and not character.has_rushed and character.has_shield:
+            if Variables.current_team.max_stamina - Variables.current_team.used_stamina > character.weapon.stamina_cost:
+                return character.weapon.shoot()
+
+    elif pressed_key[pygame.K_r]:
         reset_board()
         if character.has_moved == 0:
             target_walk(character.coordinate, character.speed + 2)
-            for row in Variables.board:
-                for place in row:
-                    if place.is_walkable:
-                        place.name = (str(place.x) + "," + str(place.y))
-
-            
 
             for row in Variables.board:
                 for place in row:
@@ -205,15 +205,12 @@ def turn(character):
                         return character.walk_movement(Variables.board[int(place.y)][int(place.x)], True, True)
 
     elif pressed_key[pygame.K_s]:
-        reset_board()
-        if not character.has_shot and not character.has_rushed and character.has_shield:
-            if Variables.current_team.max_stamina - Variables.current_team.used_stamina > character.weapon.stamina_cost:
-                return character.weapon.shoot()
+        character.is_shooting = True
+        character.is_rushing = False
 
     elif pressed_key[pygame.K_ESCAPE]:
         reset_board()
         Variables.current_character = None
-        return 0
 
     elif pressed_key[pygame.K_e]:
         reset_board()

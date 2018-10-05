@@ -7,10 +7,10 @@ from random import *
 
 Functions.equip(Variables.A, Classes.BasicWeapon)
 Functions.equip(Variables.a, Classes.BasicWeapon)
-Functions.equip(Variables.B, Classes.CircleWeapon)
-Functions.equip(Variables.a, Classes.CircleWeapon)
-Functions.equip(Variables.C, Classes.SniperRifle)
-Functions.equip(Variables.c, Classes.SniperRifle)
+Functions.equip(Variables.B, Classes.BasicWeapon)
+Functions.equip(Variables.a, Classes.BasicWeapon)
+Functions.equip(Variables.C, Classes.BasicWeapon)
+Functions.equip(Variables.c, Classes.BasicWeapon)
 
 for i in range(int((Variables.board_height * Variables.board_width)/10)):  # covers
     random_y = randint(1, int(Variables.board_height) - 2)
@@ -54,34 +54,42 @@ pygame.init()
 screen = pygame.display.set_mode((1920, 1080))
 done = False
 
-while not done:
-    for team in Variables.teams:
-        team.max_stamina = 12
-        team.used_stamina = 0
+for team in Variables.teams:
+    team.max_stamina = 12
+    team.used_stamina = 0
 
-    for character in Variables.current_team.team_members_alive:
-        character.has_moved = 0
-        character.has_shot = False
-        character.has_rushed = False
-        character.has_shield = True
-        for area in character.weapon.areas:
-            character.weapon.areas.remove(area)
-        
+for character in Variables.current_team.team_members_alive:
+    character.has_moved = 0
+    character.has_shot = False
+    character.has_rushed = False
+    character.has_shield = True
+    for area in character.weapon.areas:
+        character.weapon.areas.remove(area)
+
+while not done:
     if Variables.current_team.team == 1:
         Variables.game_turn += 1
-        
-    if Variables.current_team.team == 2 and Variables.game_turn == 1:
-        Variables.current_team.max_stamina = 15
 
-    while not Variables.current_team.used_stamina < Variables.current_team.max_stamina:
+    while not Variables.current_team.used_stamina < Variables.current_team.max_stamina:  # switch teams
         Variables.current_team.is_current_team = False
         Variables.teams[Variables.teams.index(Variables.current_team) - 1].is_current_team = True
         Variables.current_team = Variables.teams[Variables.teams.index(Variables.current_team) - 1]
         Variables.current_team.check_points()
+        for team in Variables.teams:
+            team.max_stamina = 12
+            team.used_stamina = 0
+        for character in Variables.current_team.team_members_alive:
+            character.has_moved = 0
+            character.has_shot = False
+            character.has_rushed = False
+            character.has_shield = True
+            for area in character.weapon.areas:
+                character.weapon.areas.remove(area)
 
     Variables.current_team.used_stamina += Functions.turn(Functions.choose_character())
 
     if Variables.current_team.team == 2 and Variables.game_turn == 1:
+        Variables.current_team.max_stamina = 15
         for character in Variables.current_team.team_members_alive:
             character.has_rushed = False
 
