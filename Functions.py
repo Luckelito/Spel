@@ -41,11 +41,8 @@ def reset_board():
     for row in Variables.board:
         for place in row:
             place.is_los = False
-            place.is_walkable = False
             place.is_in_range = False
-            place.name = place.true_name
-            if type(place.character) == Classes.Character:
-                place.character.name = place.character.true_name
+            place.is_target = False
 
 
 def placement_swap(character, destination):
@@ -95,7 +92,7 @@ def target_walk(origin, ability_range):
                                 place[1] += y
                                 current_path.append(Variables.board[place[1]][place[0]])
                                 u += 2 ** 0.5
-                                Variables.board[place[1]][place[0]].is_walkable = True
+                                Variables.board[place[1]][place[0]].is_in_range = True
                                 if u < Variables.board[place[1]][place[0]].required_stamina:
                                     Variables.board[place[1]][place[0]].required_stamina = ceil(u)
                                     Variables.board[place[1]][place[0]].path = []
@@ -116,7 +113,7 @@ def target_walk(origin, ability_range):
                         place[1] += y
                         current_path.append(Variables.board[place[1]][place[0]])
                         u += 1
-                        Variables.board[place[1]][place[0]].is_walkable = True
+                        Variables.board[place[1]][place[0]].is_in_range = True
                         if u < Variables.board[place[1]][place[0]].required_stamina:
                             Variables.board[place[1]][place[0]].required_stamina = ceil(u)
                             Variables.board[place[1]][place[0]].path = []
@@ -135,6 +132,60 @@ def target_walk(origin, ability_range):
             z += 1
 
     return legal_targets
+
+
+def straight_line(start, destination, length):
+    if destination.y - start.y != 0:
+        delta_y = (destination.y - start.y) / abs(destination.y - start.y)
+    if destination.x - start.x != 0:
+        delta_x = (destination.x - start.x) / abs(destination.x - start.x)
+
+    if destination.y - start.y == 0 and destination.x - start.x == 0:
+        return
+
+    if destination.x - start.x == 0:
+        for i in range(1, length + 1):
+            if 0 < start.y + delta_y * i < Variables.board_height:
+                if Variables.board[int(start.y + delta_y * i)][start.x].is_los:
+                    Variables.board[int(start.y + delta_y * i)][start.x].is_in_range = True
+                elif Variables.board[int(start.y + delta_y * i)][start.x].is_cover:
+                    Variables.board[int(start.y + delta_y * i)][start.x].is_in_range = True
+                    return
+                else:
+                    return
+
+    elif destination.y - start.y == 0:
+        for i in range(1, length + 1):
+            if 0 < start.x + delta_x * i < Variables.board_width:
+                if Variables.board[start.y][int(start.x + delta_x * i)].is_los:
+                    Variables.board[start.y][int(start.x + delta_x * i)].is_in_range = True
+                elif Variables.board[start.y][int(start.x + delta_x * i)].is_cover:
+                    Variables.board[start.y][int(start.x + delta_x * i)].is_in_range = True
+                    return
+                else:
+                    return
+
+    elif abs((destination.y - start.y) / (destination.x - start.x)) <= 1:
+        for i in range(1, length + 1):
+            if 0 <= start.x + delta_x * i < Variables.board_width and 0 <= int(start.y + delta_y * round(abs((destination.y - start.y) / (destination.x - start.x)) * i)) < Variables.board_height:
+                if Variables.board[int(start.y + delta_y * round(abs((destination.y - start.y) / (destination.x - start.x)) * i))][int(start.x + delta_x * i)].is_los:
+                    Variables.board[int(start.y + delta_y * round(abs((destination.y - start.y) / (destination.x - start.x)) * i))][int(start.x + delta_x * i)].is_in_range = True
+                elif Variables.board[int(start.y + delta_y * round(abs((destination.y - start.y) / (destination.x - start.x)) * i))][int(start.x + delta_x * i)].is_cover:
+                    Variables.board[int(start.y + delta_y * round(abs((destination.y - start.y) / (destination.x - start.x)) * i))][int(start.x + delta_x * i)].is_in_range = True
+                    return
+                else:
+                    return
+
+    elif abs((destination.y - start.y) / (destination.x - start.x)) > 1:
+        for i in range(1, length + 1):
+            if 0 <= start.y + delta_y * i < Variables.board_height and 0 <= start.x + delta_x * round(abs((destination.x - start.x) / (destination.y - start.y)) * i) < Variables.board_width:
+                if Variables.board[int(start.y + delta_y * i)][int(start.x + delta_x * round(abs((destination.x - start.x) / (destination.y - start.y)) * i))].is_los:
+                    Variables.board[int(start.y + delta_y * i)][int(start.x + delta_x * round(abs((destination.x - start.x) / (destination.y - start.y)) * i))].is_in_range = True
+                elif Variables.board[int(start.y + delta_y * i)][int(start.x + delta_x * round(abs((destination.x - start.x) / (destination.y - start.y)) * i))].is_cover:
+                    Variables.board[int(start.y + delta_y * i)][int(start.x + delta_x * round(abs((destination.x - start.x) / (destination.y - start.y)) * i))].is_in_range = True
+                    return
+                else:
+                    return
 
 
 def choose_character():
@@ -161,6 +212,8 @@ def choose_character():
 
 
 def turn(character):
+    reset_board()
+
     if type(character) != Classes.Character:
         return 0
 
@@ -169,6 +222,10 @@ def turn(character):
             target_walk(character.coordinate, Variables.current_team.max_stamina - Variables.current_team.used_stamina)
         elif character.speed - character.has_moved > 0:
             target_walk(character.coordinate, character.speed - character.has_moved)
+        for row in Variables.board:
+            for place in row:
+                if place.is_in_range:
+                    place.is_target = True
 
     pressed_key = pygame.key.get_pressed()
     pressed_mouse = pygame.mouse.get_pressed()
@@ -178,6 +235,8 @@ def turn(character):
         if not character.has_shot and not character.has_rushed and character.has_shield:
             if Variables.current_team.max_stamina - Variables.current_team.used_stamina > character.weapon.stamina_cost:
                 return character.weapon.shoot()
+        else:
+            character.is_shooting = False
 
     elif pressed_key[pygame.K_r]:
         reset_board()
@@ -187,21 +246,21 @@ def turn(character):
             for row in Variables.board:
                 for place in row:
                     if place.graphic_x_start <= mouse_pos[0] < place.graphic_x_end and place.graphic_y_start <= mouse_pos[1] < place.graphic_y_end:
-                        if Variables.board[int(place.y)][int(place.x)].is_walkable:
+                        if Variables.board[int(place.y)][int(place.x)].is_in_range:
                             return character.walk_movement(Variables.board[int(place.y)][int(place.x)], True, True)
 
             character.has_rushed = True
             character.has_moved = character.speed
 
             reset_board()
-            
+
             return character.speed
 
     elif pressed_mouse[0]:
         for row in Variables.board:
             for place in row:
                 if place.graphic_x_start <= mouse_pos[0] < place.graphic_x_end and place.graphic_y_start <= mouse_pos[1] < place.graphic_y_end:
-                    if Variables.board[int(place.y)][int(place.x)].is_walkable:
+                    if Variables.board[int(place.y)][int(place.x)].is_in_range:
                         return character.walk_movement(Variables.board[int(place.y)][int(place.x)], True, True)
 
     elif pressed_key[pygame.K_s]:

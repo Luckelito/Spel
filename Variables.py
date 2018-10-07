@@ -8,7 +8,7 @@ board = []
 for i in range(int(board_height)):
     board.append([])
     for a in range(int(board_width)):
-        board[i].append(Coordinate(true_name="_", name="_", health=0, x=a, y=i, is_cover=False, is_capture_point=False, is_open=True, is_los=False, is_in_range=False, is_walkable=False, required_stamina=100, path=[], character=None, areas=[]))
+        board[i].append(Coordinate(health=0, x=a, y=i, is_cover=False, is_capture_point=False, required_stamina=100, path=[], character=None, areas=[]))
 
 graphic_width = 18
 graphic_height = 10
@@ -25,12 +25,12 @@ team_1 = Team(team=1, is_current_team=True)
 team_2 = Team(team=2, is_current_team=False)
 teams = [team_1, team_2]
 
-A = Character(true_name="A", name="A", team=team_1)
-B = Character(true_name="B", name="B", team=team_1)
-C = Character(true_name="C", name="C", team=team_1)
-a = Character(true_name="a", name="a", team=team_2)
-b = Character(true_name="b", name="b", team=team_2)
-c = Character(true_name="c", name="c", team=team_2)
+A = Character(name="A", team=team_1)
+B = Character(name="B", team=team_1)
+C = Character(name="C", team=team_1)
+a = Character(name="a", team=team_2)
+b = Character(name="b", team=team_2)
+c = Character(name="c", team=team_2)
 
 team_1.team_members = [A, B, C]
 team_2.team_members = [a, b, c]

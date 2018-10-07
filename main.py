@@ -8,7 +8,7 @@ from random import *
 Functions.equip(Variables.A, Classes.BasicWeapon)
 Functions.equip(Variables.a, Classes.BasicWeapon)
 Functions.equip(Variables.B, Classes.BasicWeapon)
-Functions.equip(Variables.a, Classes.BasicWeapon)
+Functions.equip(Variables.b, Classes.BasicWeapon)
 Functions.equip(Variables.C, Classes.BasicWeapon)
 Functions.equip(Variables.c, Classes.BasicWeapon)
 
@@ -70,11 +70,12 @@ while not done:
     if Variables.current_team.team == 1:
         Variables.game_turn += 1
 
-    while not Variables.current_team.used_stamina < Variables.current_team.max_stamina:  # switch teams
+    if not Variables.current_team.used_stamina < Variables.current_team.max_stamina:  # switch teams
         Variables.current_team.is_current_team = False
         Variables.teams[Variables.teams.index(Variables.current_team) - 1].is_current_team = True
         Variables.current_team = Variables.teams[Variables.teams.index(Variables.current_team) - 1]
         Variables.current_team.check_points()
+        Variables.current_character = None
         for team in Variables.teams:
             team.max_stamina = 12
             team.used_stamina = 0
@@ -109,9 +110,9 @@ while not done:
                 team_1_areas = 0
                 team_2_areas = 0
                 for area in place.areas:
-                    if area.character.team == 1:
+                    if area.character.team == Variables.team_1:
                         team_1_areas += 1
-                    elif area.character.team == 2:
+                    elif area.character.team == Variables.team_2:
                         team_2_areas += 1
 
                     if team_1_areas > 0 and team_2_areas > 0:
@@ -136,7 +137,7 @@ while not done:
                 capture_point = pygame.transform.scale(capture_point, (100, 100))
                 screen.blit(capture_point, (60 + i * 100, 40 + j * 100))
 
-            if place.is_walkable:
+            if place.is_target:
                 target = get_image('Spel sprites/targetable.png')
                 target = pygame.transform.scale(target, (100, 100))
                 screen.blit(target, (60 + i * 100, 40 + j * 100))
@@ -161,5 +162,5 @@ while not done:
         Variables.camera_movement_x += 1
 
     pygame.display.flip()
-    clock.tick(30)
+    clock.tick(60)
 
