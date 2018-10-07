@@ -6,13 +6,13 @@ from math import *
 
 
 class BasicWeapon:
-    def __init__(self, hit_damage=50, area_damage=30, weapon_range=6, stamina_cost=3, character=None, areas=[]):
+    def __init__(self, hit_damage=50, area_damage=30, weapon_range=6, stamina_cost=3, character=None):
         self.hit_damage = hit_damage
         self.area_damage = area_damage
         self.weapon_range = weapon_range
         self.stamina_cost = stamina_cost
         self.character = character
-        self.areas = areas
+        self.areas = []
 
     def shoot(self):
         Functions.target_los(self.character.coordinate, self.weapon_range)
@@ -39,7 +39,6 @@ class BasicWeapon:
                     if place.is_in_range:
                         if not place.is_cover:
                             self.apply_area(place)
-                            self.areas.append(place)
                         else:
                             Functions.damage_cover(place, 1)
 
@@ -63,5 +62,6 @@ class BasicWeapon:
     def apply_area(self, place):
         place.areas.append(self)
         if type(place.character) == Classes.Character:
-            if place.character.team == self.character.team:
+            if place.character.team != self.character.team:
                 Functions.deal_damage(self.character, place.character, self.hit_damage, True)
+        self.areas.append(place)

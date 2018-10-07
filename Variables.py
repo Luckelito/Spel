@@ -8,7 +8,7 @@ board = []
 for i in range(int(board_height)):
     board.append([])
     for a in range(int(board_width)):
-        board[i].append(Coordinate(health=0, x=a, y=i, is_cover=False, is_capture_point=False, required_stamina=100, path=[], character=None, areas=[]))
+        board[i].append(Coordinate(x=a, y=i))
 
 graphic_width = 18
 graphic_height = 10

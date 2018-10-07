@@ -5,7 +5,7 @@ import pygame
 
 
 class Character:
-    def __init__(self, name=None, speed=4, health=100, team=None, weapon=None, character_jump_range=3, character_jump_damage=10):
+    def __init__(self, name=None, speed=4, health=10, team=None, weapon=None, character_jump_range=3, character_jump_damage=10):
         self.name = name
         self.speed = speed
         self.health = health

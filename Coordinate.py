@@ -5,24 +5,24 @@ from math import *
 
 
 class Coordinate:
-    def __init__(self, health, x, y, is_cover, is_capture_point, required_stamina, path, character, areas):
-        self.health = health
+    def __init__(self, x, y):
+        self.health = 0
         self.x = x
         self.y = y
         self.graphic_x_start = 0
         self.graphic_x_end = 0
         self.graphic_y_start = 0
         self.graphic_y_end = 0
-        self.is_cover = is_cover
-        self.is_capture_point = is_capture_point
+        self.is_cover = False
+        self.is_capture_point = False
         self.is_los = False
         self.is_in_range = False
         self.is_in_range = False
         self.is_target = False
-        self.required_stamina = required_stamina
-        self.path = path
-        self.character = character
-        self.areas = areas
+        self.required_stamina = 100
+        self.path = []
+        self.character = None
+        self.areas = []
 
     def los(self, character_origin):
         if self.y - character_origin.y != 0:
@@ -61,9 +61,9 @@ class Coordinate:
                 if int(self.y + delta_y * i) != character_origin.y or int(self.x - delta_x * round(abs((self.x - character_origin.x) / (self.y - character_origin.y)) * i)) != character_origin.x:
                     if Variables.board[int(self.y - delta_y * i)][int(self.x - delta_x * ceil(abs((self.x - character_origin.x) / (self.y - character_origin.y)) * i))].is_cover:
                         return
-                    #elif abs((self.x - character_origin.x) / (self.y - character_origin.y)) == 1 and \
-                    #    Variables.board[int(self.y - delta_y * i - delta_y)][int(self.x - delta_x * (abs((self.x - character_origin.x) / (self.y - character_origin.y)) * i))].is_cover and \
-                    #    Variables.board[int(self.y - delta_y * i)][int(self.x - delta_x * (abs((self.x - character_origin.x) / (self.y - character_origin.y)) * i - delta_x))].is_cover:
+                    elif abs((self.x - character_origin.x) / (self.y - character_origin.y)) == 1 and \
+                        Variables.board[int(self.y - delta_y * i - delta_y)][int(self.x - delta_x * (abs((self.x - character_origin.x) / (self.y - character_origin.y)) * i))].is_cover and \
+                        Variables.board[int(self.y - delta_y * i)][int(self.x - delta_x * (abs((self.x - character_origin.x) / (self.y - character_origin.y)) * i - delta_x))].is_cover:
                         return
                     if Variables.board[int(self.y - delta_y * i)][int(self.x - delta_x * floor(abs((self.x - character_origin.x) / (self.y - character_origin.y)) * i))].is_cover:
                         return

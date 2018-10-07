@@ -43,6 +43,8 @@ def reset_board():
             place.is_los = False
             place.is_in_range = False
             place.is_target = False
+            place.required_stamina = 100
+            place.path = []
 
 
 def placement_swap(character, destination):
@@ -87,17 +89,20 @@ def target_walk(origin, ability_range):
                 if u <= ability_range - 2 ** 0.5:
                     if 0 <= place[0] + x <= Variables.board_width - 1 and 0 <= place[1] + y <= Variables.board_height - 1:
                         if not Variables.board[place[1] + y][place[0] + x].is_cover:
-                            if 0 <= place[0] + 2 * x <= Variables.board_width - 1 and 0 <= place[1] + 2 * y <= Variables.board_height - 1:
-                                place[0] += x
-                                place[1] += y
-                                current_path.append(Variables.board[place[1]][place[0]])
-                                u += 2 ** 0.5
-                                Variables.board[place[1]][place[0]].is_in_range = True
-                                if u < Variables.board[place[1]][place[0]].required_stamina:
-                                    Variables.board[place[1]][place[0]].required_stamina = ceil(u)
-                                    Variables.board[place[1]][place[0]].path = []
-                                    for place_path in current_path:
-                                        Variables.board[place[1]][place[0]].path.append(place_path)
+                            if not Variables.board[place[1] + y][place[0]].is_cover and not Variables.board[place[1]][place[0] + x].is_cover:
+                                if 0 <= place[0] + 2 * x <= Variables.board_width - 1 and 0 <= place[1] + 2 * y <= Variables.board_height - 1:
+                                    place[0] += x
+                                    place[1] += y
+                                    current_path.append(Variables.board[place[1]][place[0]])
+                                    u += 2 ** 0.5
+                                    Variables.board[place[1]][place[0]].is_in_range = True
+                                    if u < Variables.board[place[1]][place[0]].required_stamina:
+                                        Variables.board[place[1]][place[0]].required_stamina = ceil(u)
+                                        Variables.board[place[1]][place[0]].path = []
+                                        for place_path in current_path:
+                                            Variables.board[place[1]][place[0]].path.append(place_path)
+                                else:
+                                    break
                             else:
                                 break
                         else:
@@ -106,6 +111,7 @@ def target_walk(origin, ability_range):
                         break
                 else:
                     break
+
             elif x != 0 or y != 0:
                 if 0 <= place[0] + x <= Variables.board_width - 1 and 0 <= place[1] + y <= Variables.board_height - 1:
                     if not Variables.board[place[1] + y][place[0] + x].is_cover:
@@ -114,7 +120,7 @@ def target_walk(origin, ability_range):
                         current_path.append(Variables.board[place[1]][place[0]])
                         u += 1
                         Variables.board[place[1]][place[0]].is_in_range = True
-                        if u < Variables.board[place[1]][place[0]].required_stamina:
+                        if u < Variables.board[place[1]][place[0]].required_stamina and Variables.board[place[1]][place[0]].required_stamina != 0:
                             Variables.board[place[1]][place[0]].required_stamina = ceil(u)
                             Variables.board[place[1]][place[0]].path = []
                             for place_path in current_path:
@@ -145,7 +151,7 @@ def straight_line(start, destination, length):
 
     if destination.x - start.x == 0:
         for i in range(1, length + 1):
-            if 0 < start.y + delta_y * i < Variables.board_height:
+            if 0 <= start.y + delta_y * i < Variables.board_height:
                 if Variables.board[int(start.y + delta_y * i)][start.x].is_los:
                     Variables.board[int(start.y + delta_y * i)][start.x].is_in_range = True
                 elif Variables.board[int(start.y + delta_y * i)][start.x].is_cover:
@@ -156,7 +162,7 @@ def straight_line(start, destination, length):
 
     elif destination.y - start.y == 0:
         for i in range(1, length + 1):
-            if 0 < start.x + delta_x * i < Variables.board_width:
+            if 0 <= start.x + delta_x * i < Variables.board_width:
                 if Variables.board[start.y][int(start.x + delta_x * i)].is_los:
                     Variables.board[start.y][int(start.x + delta_x * i)].is_in_range = True
                 elif Variables.board[start.y][int(start.x + delta_x * i)].is_cover:
@@ -303,6 +309,8 @@ def alive():
                 print("Character " + str(character) + " has died.")
                 team.team_members_alive.remove(character)
                 character.coordinate.character = None
+                if character == Variables.current_character:
+                    Variables.current_character = None
     win()
 
 

@@ -4,6 +4,7 @@ import Classes
 import pygame
 import os
 from random import *
+pygame.init()
 
 Functions.equip(Variables.A, Classes.BasicWeapon)
 Functions.equip(Variables.a, Classes.BasicWeapon)
@@ -50,6 +51,10 @@ def get_image(path):
     return image
 
 
+all_fonts = pygame.font.get_fonts()
+font = pygame.font.Font(None, 100)
+
+
 pygame.init()
 screen = pygame.display.set_mode((1920, 1080))
 done = False
@@ -58,19 +63,11 @@ for team in Variables.teams:
     team.max_stamina = 12
     team.used_stamina = 0
 
-for character in Variables.current_team.team_members_alive:
-    character.has_moved = 0
-    character.has_shot = False
-    character.has_rushed = False
-    character.has_shield = True
-    for area in character.weapon.areas:
-        character.weapon.areas.remove(area)
-
 while not done:
     if Variables.current_team.team == 1:
         Variables.game_turn += 1
 
-    if not Variables.current_team.used_stamina < Variables.current_team.max_stamina:  # switch teams
+    if not Variables.current_team.used_stamina < Variables.current_team.max_stamina:
         Variables.current_team.is_current_team = False
         Variables.teams[Variables.teams.index(Variables.current_team) - 1].is_current_team = True
         Variables.current_team = Variables.teams[Variables.teams.index(Variables.current_team) - 1]
@@ -84,10 +81,15 @@ while not done:
             character.has_shot = False
             character.has_rushed = False
             character.has_shield = True
-            for area in character.weapon.areas:
-                character.weapon.areas.remove(area)
 
-    Variables.current_team.used_stamina += Functions.turn(Functions.choose_character())
+            areas_to_remove = []
+            for place in character.weapon.areas:
+                if len(character.weapon.areas) > 0:
+                    place.areas.remove(character.weapon)
+                    areas_to_remove.append(place)
+            for place in areas_to_remove:
+                if len(areas_to_remove) > 0:
+                    character.weapon.areas.remove(place)
 
     if Variables.current_team.team == 2 and Variables.game_turn == 1:
         Variables.current_team.max_stamina = 15
@@ -95,6 +97,8 @@ while not done:
             character.has_rushed = False
 
     Functions.win()
+
+    Variables.current_team.used_stamina += Functions.turn(Functions.choose_character())
 
     Functions.set_graphic_board()
 
@@ -105,7 +109,6 @@ while not done:
     for i in range(Variables.graphic_width):  # Graphics
         for j in range(Variables.graphic_height):
             place = Variables.graphic_board[j][i]
-
             if len(place.areas) > 0:  # area color
                 team_1_areas = 0
                 team_2_areas = 0
@@ -120,7 +123,8 @@ while not done:
                     elif team_1_areas > 0 and team_2_areas == 0:
                         tile = get_image('Spel sprites/area_blue.png')
                     elif team_1_areas == 0 and team_2_areas > 0:
-                        tile = get_image('Spel sprites/area_blue.png')
+                        tile = get_image('Spel sprites/area_red.png')
+
             else:
                 tile = get_image('Spel sprites/tile.png')
 
@@ -141,6 +145,10 @@ while not done:
                 target = get_image('Spel sprites/targetable.png')
                 target = pygame.transform.scale(target, (100, 100))
                 screen.blit(target, (60 + i * 100, 40 + j * 100))
+
+                if int(place.required_stamina) > 0 and not Variables.current_character.is_shooting:
+                    required_stamina = font.render(str(place.required_stamina), True, (0, 128, 0))
+                    screen.blit(required_stamina, (90 + i * 100, 60 + j * 100))
 
             if type(place.character) == Classes.Character:
                 capture_point = get_image('Spel sprites/character_' + str(place.character.team.team) + '.png')
