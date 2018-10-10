@@ -244,6 +244,9 @@ def turn(character):
         else:
             character.is_shooting = False
 
+    if character.is_moving:
+        character.walk_movement(None, True, True)
+
     elif pressed_key[pygame.K_r]:
         reset_board()
         if character.has_moved == 0:

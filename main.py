@@ -5,6 +5,7 @@ import pygame
 import os
 from random import *
 pygame.init()
+Variables.passed_time = pygame.time.get_ticks()
 
 Functions.equip(Variables.A, Classes.BasicWeapon)
 Functions.equip(Variables.a, Classes.BasicWeapon)

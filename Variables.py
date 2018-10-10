@@ -7,8 +7,8 @@ board_height = 15
 board = []
 for i in range(int(board_height)):
     board.append([])
-    for a in range(int(board_width)):
-        board[i].append(Coordinate(x=a, y=i))
+    for j in range(int(board_width)):
+        board[i].append(Coordinate(x=j, y=i))
 
 graphic_width = 18
 graphic_height = 10
@@ -18,7 +18,7 @@ camera_movement_x = 0
 graphic_board = []
 for i in range(int(graphic_height)):
     graphic_board.append([])
-    for a in range(int(graphic_width)):
+    for j in range(int(graphic_width)):
         graphic_board[i].append(None)
 
 team_1 = Team(team=1, is_current_team=True)
@@ -40,3 +40,5 @@ team_2.team_members_alive = [a, b, c]
 game_turn = 0
 current_team = team_1
 current_character = None
+
+passed_time = None
