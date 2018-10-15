@@ -33,8 +33,13 @@ class Character:
         if len(self.current_destination) == 0:
             self.current_destination = destination.path
 
+        if requires_stamina:
+            moves = self.current_destination[-1].required_stamina
+        else:
+            moves = 0
+
         if self.is_jumping:
-            Functions.reset_board()
+            Functions.reset_board(True, False)
             Functions.target(self.current_destination[-1], 3)
 
             pressed_key = pygame.key.get_pressed()
@@ -59,14 +64,14 @@ class Character:
                                     self.current_destination.append(place)
 
             current_time = pygame.time.get_ticks()
-            if Variables.passed_time - current_time >= 1000:
+            if Variables.passed_time - current_time >= 500:
                 Variables.passed_time = pygame.time.get_ticks()
 
                 if len(self.current_destination) == 1:
                     self.jump_movement(self.current_destination[0])
                     self.has_moved = self.speed
                     self.is_moving = False
-                    return self.current_destination[0].required_stamina
+                    return moves
 
                 else:
                     if len(self.current_destination[0].areas) > 0:
@@ -76,7 +81,7 @@ class Character:
 
                     if type(self.current_destination[0].character) != Character:
                         Functions.placement_swap(self, self.current_destination[0])
-                        Functions.reset_board()
+                        Functions.reset_board(True, False)
 
                     self.current_destination.remove(self.current_destination[0])
 
@@ -87,22 +92,16 @@ class Character:
                 self.is_jumping = True
                 return 0
 
-        if requires_stamina:
-            moves = self.current_destination[-1].required_stamina
-            self.has_moved += moves
-        else:
-            moves = 0
-
         current_time = pygame.time.get_ticks()
-        if current_time - Variables.passed_time >= 1000:
+        if current_time - Variables.passed_time >= 500:
             Variables.passed_time = pygame.time.get_ticks()
 
             if len(self.current_destination) == 1:
                 Functions.placement_swap(self, self.current_destination[0])
-                Functions.reset_board()
-                self.has_moved = self.speed
+                Functions.reset_board(True, True)
+                self.has_moved += moves
                 self.is_moving = False
-                return self.current_destination[0].required_stamina
+                return moves
 
             else:
                 if len(self.current_destination[0].areas) > 0:
@@ -111,11 +110,11 @@ class Character:
                             Functions.deal_damage(area.character, self, area.area_damage, True)
                 if type(self.current_destination[0].character) != Character:
                     Functions.placement_swap(self, self.current_destination[0])
-                    Functions.reset_board()
+                    Functions.reset_board(True, False)
 
                 self.current_destination.remove(self.current_destination[0])
 
-        return moves
+        return 0
 
     def jump_movement(self, destination):
         if len(destination.areas) > 0:

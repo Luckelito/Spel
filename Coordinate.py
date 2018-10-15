@@ -17,7 +17,6 @@ class Coordinate:
         self.is_capture_point = False
         self.is_los = False
         self.is_in_range = False
-        self.is_in_range = False
         self.is_target = False
         self.required_stamina = 100
         self.path = []
@@ -62,8 +61,9 @@ class Coordinate:
                     if Variables.board[int(self.y - delta_y * i)][int(self.x - delta_x * ceil(abs((self.x - character_origin.x) / (self.y - character_origin.y)) * i))].is_cover:
                         return
                     elif abs((self.x - character_origin.x) / (self.y - character_origin.y)) == 1 and \
-                        Variables.board[int(self.y - delta_y * i - delta_y)][int(self.x - delta_x * (abs((self.x - character_origin.x) / (self.y - character_origin.y)) * i))].is_cover and \
-                        Variables.board[int(self.y - delta_y * i)][int(self.x - delta_x * (abs((self.x - character_origin.x) / (self.y - character_origin.y)) * i - delta_x))].is_cover:
+                            Variables.board[int(self.y - delta_y * i + delta_y)][int(self.x - delta_x * (abs((self.x - character_origin.x) / (self.y - character_origin.y)) * i))].is_cover and \
+                            Variables.board[int(self.y - delta_y * i)][int(self.x - delta_x * (abs((self.x - character_origin.x) / (self.y - character_origin.y)) * i + delta_x))].is_cover:
+                        print(self.x, self.y)
                         return
                     if Variables.board[int(self.y - delta_y * i)][int(self.x - delta_x * floor(abs((self.x - character_origin.x) / (self.y - character_origin.y)) * i))].is_cover:
                         return

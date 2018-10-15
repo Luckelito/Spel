@@ -15,6 +15,7 @@ class BasicWeapon:
         self.areas = []
 
     def shoot(self):
+        Functions.reset_board(True, True)
         Functions.target_los(self.character.coordinate, self.weapon_range)
 
         pressed_key = pygame.key.get_pressed()
@@ -45,7 +46,7 @@ class BasicWeapon:
             self.character.has_shot = True
             self.character.has_shield = False
 
-            Functions.reset_board()
+            Functions.reset_board(True, True)
 
             self.character.is_shooting = False
 
@@ -56,6 +57,8 @@ class BasicWeapon:
                 for place in row:
                     if place.is_in_range:
                         place.is_target = True
+                    elif place.is_los:
+                        place.is_in_range = True
 
         return 0
 

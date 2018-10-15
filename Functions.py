@@ -37,14 +37,16 @@ def set_graphic_board():
             Variables.graphic_board[i][j].graphic_y_end = 140 + i * 100
 
 
-def reset_board():
+def reset_board(states, stored_info):
     for row in Variables.board:
         for place in row:
-            place.is_los = False
-            place.is_in_range = False
-            place.is_target = False
-            place.required_stamina = 100
-            place.path = []
+            if states:
+                place.is_los = False
+                place.is_in_range = False
+                place.is_target = False
+            if stored_info:
+                place.required_stamina = 100
+                place.path = []
 
 
 def placement_swap(character, destination):
@@ -218,20 +220,8 @@ def choose_character():
 
 
 def turn(character):
-    reset_board()
-
     if type(character) != Classes.Character:
         return 0
-
-    if not character.is_shooting and not character.is_rushing and not character.is_jumping:
-        if character.speed - character.has_moved > Variables.current_team.max_stamina - Variables.current_team.used_stamina:
-            target_walk(character.coordinate, Variables.current_team.max_stamina - Variables.current_team.used_stamina)
-        elif character.speed - character.has_moved > 0:
-            target_walk(character.coordinate, character.speed - character.has_moved)
-        for row in Variables.board:
-            for place in row:
-                if place.is_in_range:
-                    place.is_target = True
 
     pressed_key = pygame.key.get_pressed()
     pressed_mouse = pygame.mouse.get_pressed()
@@ -245,10 +235,17 @@ def turn(character):
             character.is_shooting = False
 
     if character.is_moving:
-        character.walk_movement(None, True, True)
+        return character.walk_movement(None, True, True)
 
-    elif pressed_key[pygame.K_r]:
-        reset_board()
+    reset_board(True, True)
+
+    if character.speed - character.has_moved > Variables.current_team.max_stamina - Variables.current_team.used_stamina:
+        target_walk(character.coordinate, Variables.current_team.max_stamina - Variables.current_team.used_stamina)
+    elif character.speed - character.has_moved > 0:
+        target_walk(character.coordinate, character.speed - character.has_moved)
+
+    if pressed_key[pygame.K_r]:
+        reset_board(True, True)
         if character.has_moved == 0:
             target_walk(character.coordinate, character.speed + 2)
 
@@ -261,34 +258,37 @@ def turn(character):
             character.has_rushed = True
             character.has_moved = character.speed
 
-            reset_board()
+            reset_board(True, True)
 
             return character.speed
 
-    elif pressed_mouse[0]:
-        for row in Variables.board:
-            for place in row:
-                if place.graphic_x_start <= mouse_pos[0] < place.graphic_x_end and place.graphic_y_start <= mouse_pos[1] < place.graphic_y_end:
-                    if Variables.board[int(place.y)][int(place.x)].is_in_range:
+    for row in Variables.board:
+        for place in row:
+            if place.graphic_x_start <= mouse_pos[0] < place.graphic_x_end and place.graphic_y_start <= mouse_pos[1] < place.graphic_y_end:
+                if Variables.board[int(place.y)][int(place.x)].is_in_range:
+                    if pressed_mouse[0]:
                         return character.walk_movement(Variables.board[int(place.y)][int(place.x)], True, True)
+                    else:
+                        for path in place.path:
+                            path.is_target = True
 
-    elif pressed_key[pygame.K_s]:
+    if pressed_key[pygame.K_s]:
         character.is_shooting = True
         character.is_rushing = False
 
     elif pressed_key[pygame.K_ESCAPE]:
-        reset_board()
+        reset_board(True, True)
         Variables.current_character = None
 
     elif pressed_key[pygame.K_e]:
-        reset_board()
+        reset_board(True, True)
         return Variables.current_team.max_stamina
 
     return 0
 
 
 def deal_damage(shooter, target_of_damage, damage, can_break_shield):
-    reset_board()
+    reset_board(True, True)
     if not target_of_damage.has_shield:
         target_of_damage.health -= damage
         print(str(shooter)+" has dealt "+str(damage)+" damage to "+str(target_of_damage)+"! "+str(target_of_damage)+" has "+str(target_of_damage.health)+" health left.")

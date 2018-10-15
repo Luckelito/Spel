@@ -126,6 +126,9 @@ while not done:
                     elif team_1_areas == 0 and team_2_areas > 0:
                         tile = get_image('Spel sprites/area_red.png')
 
+            elif place.is_target:
+                tile = get_image('Spel sprites/area_purple.png')
+
             else:
                 tile = get_image('Spel sprites/tile.png')
 
@@ -142,7 +145,7 @@ while not done:
                 capture_point = pygame.transform.scale(capture_point, (100, 100))
                 screen.blit(capture_point, (60 + i * 100, 40 + j * 100))
 
-            if place.is_target:
+            if place.is_in_range:
                 target = get_image('Spel sprites/targetable.png')
                 target = pygame.transform.scale(target, (100, 100))
                 screen.blit(target, (60 + i * 100, 40 + j * 100))
