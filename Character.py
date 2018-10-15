@@ -39,7 +39,7 @@ class Character:
             moves = 0
 
         if self.is_jumping:
-            Functions.reset_board(True, False)
+            Functions.reset_board(True, True)
             Functions.target(self.current_destination[-1], 3)
 
             pressed_key = pygame.key.get_pressed()
@@ -71,6 +71,8 @@ class Character:
                     self.jump_movement(self.current_destination[0])
                     self.has_moved = self.speed
                     self.is_moving = False
+                    self.is_jumping = False
+                    self.current_destination = []
                     return moves
 
                 else:
@@ -85,12 +87,14 @@ class Character:
 
                     self.current_destination.remove(self.current_destination[0])
 
+            self.is_jumping = False
             return 0
 
         if can_jump:
             if type(self.current_destination[-1].character) == Character:
-                self.is_jumping = True
-                return 0
+                if self.current_destination[-1].character != self:
+                    self.is_jumping = True
+                    return 0
 
         current_time = pygame.time.get_ticks()
         if current_time - Variables.passed_time >= 500:
@@ -101,6 +105,7 @@ class Character:
                 Functions.reset_board(True, True)
                 self.has_moved += moves
                 self.is_moving = False
+                self.current_destination = []
                 return moves
 
             else:

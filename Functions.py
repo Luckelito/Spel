@@ -45,7 +45,7 @@ def reset_board(states, stored_info):
                 place.is_in_range = False
                 place.is_target = False
             if stored_info:
-                place.required_stamina = 100
+                place.required_stamina = 0
                 place.path = []
 
 
@@ -98,7 +98,7 @@ def target_walk(origin, ability_range):
                                     current_path.append(Variables.board[place[1]][place[0]])
                                     u += 2 ** 0.5
                                     Variables.board[place[1]][place[0]].is_in_range = True
-                                    if u < Variables.board[place[1]][place[0]].required_stamina:
+                                    if u < Variables.board[place[1]][place[0]].required_stamina or Variables.board[place[1]][place[0]].required_stamina == 0:
                                         Variables.board[place[1]][place[0]].required_stamina = ceil(u)
                                         Variables.board[place[1]][place[0]].path = []
                                         for place_path in current_path:
@@ -122,7 +122,7 @@ def target_walk(origin, ability_range):
                         current_path.append(Variables.board[place[1]][place[0]])
                         u += 1
                         Variables.board[place[1]][place[0]].is_in_range = True
-                        if u < Variables.board[place[1]][place[0]].required_stamina and Variables.board[place[1]][place[0]].required_stamina != 0:
+                        if u < Variables.board[place[1]][place[0]].required_stamina or Variables.board[place[1]][place[0]].required_stamina == 0:
                             Variables.board[place[1]][place[0]].required_stamina = ceil(u)
                             Variables.board[place[1]][place[0]].path = []
                             for place_path in current_path:
@@ -156,9 +156,6 @@ def straight_line(start, destination, length):
             if 0 <= start.y + delta_y * i < Variables.board_height:
                 if Variables.board[int(start.y + delta_y * i)][start.x].is_los:
                     Variables.board[int(start.y + delta_y * i)][start.x].is_in_range = True
-                elif Variables.board[int(start.y + delta_y * i)][start.x].is_cover:
-                    Variables.board[int(start.y + delta_y * i)][start.x].is_in_range = True
-                    return
                 else:
                     return
 
@@ -167,9 +164,6 @@ def straight_line(start, destination, length):
             if 0 <= start.x + delta_x * i < Variables.board_width:
                 if Variables.board[start.y][int(start.x + delta_x * i)].is_los:
                     Variables.board[start.y][int(start.x + delta_x * i)].is_in_range = True
-                elif Variables.board[start.y][int(start.x + delta_x * i)].is_cover:
-                    Variables.board[start.y][int(start.x + delta_x * i)].is_in_range = True
-                    return
                 else:
                     return
 
@@ -178,9 +172,6 @@ def straight_line(start, destination, length):
             if 0 <= start.x + delta_x * i < Variables.board_width and 0 <= int(start.y + delta_y * round(abs((destination.y - start.y) / (destination.x - start.x)) * i)) < Variables.board_height:
                 if Variables.board[int(start.y + delta_y * round(abs((destination.y - start.y) / (destination.x - start.x)) * i))][int(start.x + delta_x * i)].is_los:
                     Variables.board[int(start.y + delta_y * round(abs((destination.y - start.y) / (destination.x - start.x)) * i))][int(start.x + delta_x * i)].is_in_range = True
-                elif Variables.board[int(start.y + delta_y * round(abs((destination.y - start.y) / (destination.x - start.x)) * i))][int(start.x + delta_x * i)].is_cover:
-                    Variables.board[int(start.y + delta_y * round(abs((destination.y - start.y) / (destination.x - start.x)) * i))][int(start.x + delta_x * i)].is_in_range = True
-                    return
                 else:
                     return
 
@@ -189,9 +180,6 @@ def straight_line(start, destination, length):
             if 0 <= start.y + delta_y * i < Variables.board_height and 0 <= start.x + delta_x * round(abs((destination.x - start.x) / (destination.y - start.y)) * i) < Variables.board_width:
                 if Variables.board[int(start.y + delta_y * i)][int(start.x + delta_x * round(abs((destination.x - start.x) / (destination.y - start.y)) * i))].is_los:
                     Variables.board[int(start.y + delta_y * i)][int(start.x + delta_x * round(abs((destination.x - start.x) / (destination.y - start.y)) * i))].is_in_range = True
-                elif Variables.board[int(start.y + delta_y * i)][int(start.x + delta_x * round(abs((destination.x - start.x) / (destination.y - start.y)) * i))].is_cover:
-                    Variables.board[int(start.y + delta_y * i)][int(start.x + delta_x * round(abs((destination.x - start.x) / (destination.y - start.y)) * i))].is_in_range = True
-                    return
                 else:
                     return
 
