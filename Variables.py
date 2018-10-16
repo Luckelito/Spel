@@ -42,3 +42,4 @@ current_team = team_1
 current_character = None
 
 passed_time = None
+mouse_hold = False

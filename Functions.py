@@ -54,6 +54,10 @@ def placement_swap(character, destination):
         character.coordinate.character = None
     character.coordinate = destination
     destination.character = character
+    if len(destination.areas) > 0:
+        for area in destination.areas:
+            if area.character.team != character.team:
+                deal_damage(area.character, character, area.area_damage, True)
 
 
 def target(origin, ability_range):
@@ -215,6 +219,14 @@ def turn(character):
     pressed_mouse = pygame.mouse.get_pressed()
     mouse_pos = pygame.mouse.get_pos()
 
+    if pressed_mouse[0]:  # prevent holding the mouse button down
+        if Variables.mouse_hold:
+            return 0
+        else:
+            Variables.mouse_hold = True
+    else:
+        Variables.mouse_hold = False
+
     if character.is_shooting:
         if not character.has_shot and not character.has_rushed and character.has_shield:
             if Variables.current_team.max_stamina - Variables.current_team.used_stamina > character.weapon.stamina_cost:
@@ -276,7 +288,6 @@ def turn(character):
 
 
 def deal_damage(shooter, target_of_damage, damage, can_break_shield):
-    reset_board(True, True)
     if not target_of_damage.has_shield:
         target_of_damage.health -= damage
         print(str(shooter)+" has dealt "+str(damage)+" damage to "+str(target_of_damage)+"! "+str(target_of_damage)+" has "+str(target_of_damage.health)+" health left.")

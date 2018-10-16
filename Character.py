@@ -76,11 +76,6 @@ class Character:
                     return moves
 
                 else:
-                    if len(self.current_destination[0].areas) > 0:
-                        for area in self.current_destination[0].areas:
-                            if area.character.team != self.team:
-                                Functions.deal_damage(area.character, self, area.area_damage, True)
-
                     if type(self.current_destination[0].character) != Character:
                         Functions.placement_swap(self, self.current_destination[0])
                         Functions.reset_board(True, False)
@@ -109,10 +104,6 @@ class Character:
                 return moves
 
             else:
-                if len(self.current_destination[0].areas) > 0:
-                    for area in self.current_destination[0].areas:
-                        if area.character.team != self.team:
-                            Functions.deal_damage(area.character, self, area.area_damage, True)
                 if type(self.current_destination[0].character) != Character:
                     Functions.placement_swap(self, self.current_destination[0])
                     Functions.reset_board(True, False)
@@ -122,9 +113,6 @@ class Character:
         return 0
 
     def jump_movement(self, destination):
-        if len(destination.areas) > 0:
-            for area in destination.areas:
-                if area.character.team != self.team:
-                    Functions.deal_damage(area.character, self, area.area_damage, True)
         Functions.placement_swap(self, destination)
         Functions.reset_board()
+
