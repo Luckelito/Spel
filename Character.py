@@ -23,6 +23,7 @@ class Character:
         self.is_jumping = False
         self.is_moving = False
         self.current_destination = []
+        self.has_jump_destination = False
 
     def __repr__(self):
         return self.name
@@ -40,7 +41,8 @@ class Character:
 
         if self.is_jumping:
             Functions.reset_board(True, True)
-            Functions.target(self.current_destination[-1], 3)
+            if not self.has_jump_destination:
+                Functions.target(self.current_destination[-1], 3)
 
             pressed_key = pygame.key.get_pressed()
             pressed_mouse = pygame.mouse.get_pressed()
@@ -55,34 +57,35 @@ class Character:
                     for place in row:
                         if place.graphic_x_start <= mouse_pos[0] < place.graphic_x_end and place.graphic_y_start <= mouse_pos[1] < place.graphic_y_end:
                             if Variables.board[int(place.y)][int(place.x)].is_in_range:
-                                if type(place.character) == Character:
-                                    return 0
-                                elif place.character == self:
+                                if place.character == self:
                                     self.current_destination.append(place)
+                                elif type(place.character) == Character:
+                                    return 0
                                 else:
                                     self.current_destination.append(place)
+                                self.has_jump_destination = True
 
-            current_time = pygame.time.get_ticks()
-            if Variables.passed_time - current_time >= 500:
-                Variables.passed_time = pygame.time.get_ticks()
+            if self.has_jump_destination:
+                current_time = pygame.time.get_ticks()
+                if current_time - Variables.passed_time >= 500:
+                    Variables.passed_time = pygame.time.get_ticks()
 
-                if len(self.current_destination) == 1:
-                    self.jump_movement(self.current_destination[0])
-                    self.has_moved = self.speed
-                    self.is_moving = False
-                    self.is_jumping = False
-                    self.current_destination = []
-                    print(self.has_moved)
-                    return moves
+                    if len(self.current_destination) == 1:
+                        self.jump_movement(self.current_destination[0])
+                        self.has_moved = self.speed
+                        self.is_moving = False
+                        self.is_jumping = False
+                        self.has_jump_destination = False
+                        self.current_destination = []
+                        return moves
 
-                else:
-                    if type(self.current_destination[0].character) != Character:
-                        Functions.placement_swap(self, self.current_destination[0])
-                        Functions.reset_board(True, False)
+                    else:
+                        if type(self.current_destination[0].character) != Character:
+                            Functions.placement_swap(self, self.current_destination[0])
+                            Functions.reset_board(True, False)
 
-                    self.current_destination.remove(self.current_destination[0])
+                        self.current_destination.remove(self.current_destination[0])
 
-            self.is_jumping = False
             return 0
 
         if can_jump:
@@ -114,5 +117,5 @@ class Character:
 
     def jump_movement(self, destination):
         Functions.placement_swap(self, destination)
-        Functions.reset_board()
+        Functions.reset_board(True, True)
 
