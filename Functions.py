@@ -307,7 +307,7 @@ def alive():
 
 def win():
     for team in Variables.teams:
-        if team.points >= 5 or len(Variables.teams[Variables.teams.index(Variables.current_team) - 1].team_members_alive) == 0:
+        if team.points >= 3 or len(Variables.teams[Variables.teams.index(Variables.current_team) - 1].team_members_alive) == 0:
             if len(Variables.current_team.team_members_alive) == 0:
                 print("It's a tie!")
             else:

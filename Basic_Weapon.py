@@ -38,17 +38,15 @@ class BasicWeapon:
             for row in Variables.board:
                 for place in row:
                     if place.is_in_range:
-                        if not place.is_cover:
-                            self.apply_area(place)
-                        else:
-                            Functions.damage_cover(place, 1)
+                        self.apply_area(place)
+                    else:
+                        Functions.damage_cover(place, 1)
 
             self.character.has_shot = True
             self.character.has_shield = False
+            self.character.is_shooting = False
 
             Functions.reset_board(True, True)
-
-            self.character.is_shooting = False
 
             return self.stamina_cost
 

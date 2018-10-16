@@ -53,8 +53,7 @@ class Character:
             if pressed_mouse[0]:
                 for row in Variables.board:
                     for place in row:
-                        if place.graphic_x_start <= mouse_pos[0] < place.graphic_x_end and place.graphic_y_start <= \
-                                mouse_pos[1] < place.graphic_y_end:
+                        if place.graphic_x_start <= mouse_pos[0] < place.graphic_x_end and place.graphic_y_start <= mouse_pos[1] < place.graphic_y_end:
                             if Variables.board[int(place.y)][int(place.x)].is_in_range:
                                 if type(place.character) == Character:
                                     return 0
@@ -73,6 +72,7 @@ class Character:
                     self.is_moving = False
                     self.is_jumping = False
                     self.current_destination = []
+                    print(self.has_moved)
                     return moves
 
                 else:
