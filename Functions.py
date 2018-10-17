@@ -199,7 +199,7 @@ def choose_character():
     if pressed_key[pygame.K_e] or Variables.end_turn_button.is_pressed:
         Variables.current_team.used_stamina = Variables.current_team.used_stamina
         reset_board(True, True)
-        return None
+        return "Cancelled"
 
     if Variables.current_character == None:
         if pressed_mouse[0]:
@@ -221,7 +221,11 @@ def choose_character():
 
 def turn(character):
     if type(character) != Classes.Character:
-        return 0
+        if character == "Cancelled":
+            reset_board(True, True)
+            return Variables.current_team.max_stamina
+        else:
+            return 0
 
     pressed_key = pygame.key.get_pressed()
     pressed_mouse = pygame.mouse.get_pressed()
