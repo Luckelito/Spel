@@ -193,6 +193,14 @@ def choose_character():
     pressed_mouse = pygame.mouse.get_pressed()
     mouse_pos = pygame.mouse.get_pos()
 
+    for button in Variables.all_buttons:
+        button.check_if_pressed()
+
+    if pressed_key[pygame.K_e] or Variables.end_turn_button.is_pressed:
+        Variables.current_team.used_stamina = Variables.current_team.used_stamina
+        reset_board(True, True)
+        return None
+
     if Variables.current_character == None:
         if pressed_mouse[0]:
             for row in Variables.graphic_board:
@@ -262,6 +270,18 @@ def turn(character):
 
             return character.speed
 
+    if pressed_key[pygame.K_s]:
+        character.is_shooting = True
+        character.is_rushing = False
+
+    if pressed_key[pygame.K_ESCAPE]:
+        reset_board(True, True)
+        Variables.current_character = None
+
+    if pressed_key[pygame.K_e] or Variables.end_turn_button.is_pressed:
+        reset_board(True, True)
+        return Variables.current_team.max_stamina
+
     for row in Variables.board:
         for place in row:
             if place.graphic_x_start <= mouse_pos[0] < place.graphic_x_end and place.graphic_y_start <= mouse_pos[1] < place.graphic_y_end:
@@ -271,18 +291,6 @@ def turn(character):
                     else:
                         for path in place.path:
                             path.is_target = True
-
-    if pressed_key[pygame.K_s]:
-        character.is_shooting = True
-        character.is_rushing = False
-
-    elif pressed_key[pygame.K_ESCAPE]:
-        reset_board(True, True)
-        Variables.current_character = None
-
-    elif pressed_key[pygame.K_e]:
-        reset_board(True, True)
-        return Variables.current_team.max_stamina
 
     return 0
 

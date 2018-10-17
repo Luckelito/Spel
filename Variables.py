@@ -43,3 +43,6 @@ current_character = None
 
 passed_time = None
 mouse_hold = False
+
+end_turn_button = RoundButton(100, 250, 850, True)
+all_buttons = [end_turn_button]

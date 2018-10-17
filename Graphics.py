@@ -3,38 +3,8 @@ import os
 import Variables
 import Classes
 import Functions
-from random import *
-
-for i in range(int((Variables.board_height * Variables.board_width)/10)):  # covers
-    random_y = randint(1, int(Variables.board_height) - 2)
-    random_x = randint(1, int(Variables.board_width) - 2)
-    random_number = randint(1, 4)
-    Variables.board[random_y][random_x].health = random_number
-    Variables.board[random_y][random_x].is_cover = True
-    Variables.board[random_y][random_x].is_open = False
-    Variables.board[Variables.board_height - random_y - 1][Variables.board_width - random_x - 1].health = random_number
-    Variables.board[Variables.board_height - random_y - 1][Variables.board_width - random_x - 1].name = Variables.board[Variables.board_height - random_y][Variables.board_width - random_x].health
-    Variables.board[Variables.board_height - random_y - 1][Variables.board_width - random_x - 1].is_cover = True
-    Variables.board[Variables.board_height - random_y - 1][Variables.board_width - random_x - 1].is_open = False
-
-for i in range(-1, 2):  # capture points
-    for j in range(-1, 2):
-        Variables.Variables.board[int(Variables.board_height / 2 + i)][int(Variables.board_width / 2 + j)].is_capture_point = True
-        Variables.Variables.board[int(Variables.board_height / 2 + i)][int(Variables.board_width / 2 + j)].is_cover = False
-        Variables.Variables.board[int(Variables.board_height / 2 + i)][int(Variables.board_width / 2 + j)].health = 0
-
-# cover_list = [[1, 4], [1, 5], [0, 6]]
-# for coordinate in cover_list:
-#    cover = Classes.Cover(name=str(random.randint(1, 4)))
-#    Functions.placement_swap(cover, coordinate[0], coordinate[-1])
-
-Functions.starting_positions(int(Variables.board_height), int(Variables.board_width))
-
-clock = pygame.time.Clock()
 
 _image_library = {}
-
-
 def get_image(path):
     global _image_library
     image = _image_library.get(path)
@@ -45,28 +15,17 @@ def get_image(path):
     return image
 
 
-pygame.init()
-screen = pygame.display.set_mode((1920, 1080))
-done = False
-
-while not done:
-    Functions.set_graphic_board()
-
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            done = True
-
-    for i in range(Variables.graphic_width):
+def graphics(screen, font):
+    for i in range(Variables.graphic_width):  # Graphics
         for j in range(Variables.graphic_height):
             place = Variables.graphic_board[j][i]
-
             if len(place.areas) > 0:  # area color
                 team_1_areas = 0
                 team_2_areas = 0
                 for area in place.areas:
-                    if area.character.team == 1:
+                    if area.character.team == Variables.team_1:
                         team_1_areas += 1
-                    elif area.character.team == 2:
+                    elif area.character.team == Variables.team_2:
                         team_2_areas += 1
 
                     if team_1_areas > 0 and team_2_areas > 0:
@@ -74,7 +33,11 @@ while not done:
                     elif team_1_areas > 0 and team_2_areas == 0:
                         tile = get_image('Spel sprites/area_blue.png')
                     elif team_1_areas == 0 and team_2_areas > 0:
-                        tile = get_image('Spel sprites/area_blue.png')
+                        tile = get_image('Spel sprites/area_red.png')
+
+            elif place.is_target:
+                tile = get_image('Spel sprites/area_purple.png')
+
             else:
                 tile = get_image('Spel sprites/tile.png')
 
@@ -91,6 +54,15 @@ while not done:
                 capture_point = pygame.transform.scale(capture_point, (100, 100))
                 screen.blit(capture_point, (60 + i * 100, 40 + j * 100))
 
+            if place.is_in_range:
+                target = get_image('Spel sprites/targetable.png')
+                target = pygame.transform.scale(target, (100, 100))
+                screen.blit(target, (60 + i * 100, 40 + j * 100))
+
+                if int(place.required_stamina) > 0 and not Variables.current_character.is_shooting:
+                    required_stamina = font.render(str(place.required_stamina), True, (0, 128, 0))
+                    screen.blit(required_stamina, (90 + i * 100, 60 + j * 100))
+
             if type(place.character) == Classes.Character:
                 capture_point = get_image('Spel sprites/character_' + str(place.character.team.team) + '.png')
                 capture_point = pygame.transform.scale(capture_point, (100, 100))
@@ -99,6 +71,19 @@ while not done:
                     shield = get_image('Spel sprites/shield.png')
                     shield = pygame.transform.scale(shield, (100, 100))
                     screen.blit(shield, (60 + i * 100, 40 + j * 100))
+
+    if Variables.current_team.team == 1:
+        color = (25, 40, 150)
+    else:
+        color = (150, 25, 25)
+
+    pygame.draw.circle(screen, color, (Variables.end_turn_button.center_x, Variables.end_turn_button.center_y), Variables.end_turn_button.radius + 20)
+
+    for button in Variables.all_buttons:
+        if button.is_active:
+            button.draw_self(screen)
+
+    screen.blit(font.render(str(Variables.current_team.max_stamina - Variables.current_team.used_stamina), True, (255, 255, 255)), (Variables.end_turn_button.center_x - 20 * len(str(Variables.current_team.max_stamina - Variables.current_team.used_stamina)), Variables.end_turn_button.center_y - 30))
 
     pressed = pygame.key.get_pressed()
     if pressed[pygame.K_UP] and Variables.camera_movement_y - 1 >= 0:
@@ -110,5 +95,3 @@ while not done:
     if pressed[pygame.K_RIGHT] and Variables.camera_movement_x + 1 <= Variables.board_width - Variables.graphic_width:
         Variables.camera_movement_x += 1
 
-    pygame.display.flip()
-    clock.tick(60)
