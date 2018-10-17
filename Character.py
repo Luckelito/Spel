@@ -13,6 +13,7 @@ class Character:
         self.has_moved = False
         self.has_shot = False
         self.has_rushed = False
+        self.has_jumped = False
         self.coordinate = None
         self.weapon = weapon
         self.has_shield = True
@@ -75,6 +76,7 @@ class Character:
                         self.has_moved = self.speed
                         self.is_moving = False
                         self.is_jumping = False
+                        self.has_jumped = True
                         self.has_jump_destination = False
                         self.current_destination = []
                         return moves

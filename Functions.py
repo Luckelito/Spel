@@ -228,7 +228,7 @@ def turn(character):
         Variables.mouse_hold = False
 
     if character.is_shooting:
-        if not character.has_shot and not character.has_rushed and character.has_shield:
+        if not character.has_shot and not character.has_rushed and not character.has_jumped and character.has_shield:
             if Variables.current_team.max_stamina - Variables.current_team.used_stamina > character.weapon.stamina_cost:
                 return character.weapon.shoot()
         else:
