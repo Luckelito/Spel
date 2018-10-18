@@ -242,6 +242,8 @@ def turn(character):
         else:
             return 0
 
+    Variables.shoot_button.is_active = True
+
     pressed_key = pygame.key.get_pressed()
     pressed_mouse = pygame.mouse.get_pressed()
     mouse_pos = pygame.mouse.get_pos()
@@ -281,12 +283,13 @@ def turn(character):
 
             return character.speed
 
-    if pressed_key[pygame.K_s]:
+    if pressed_key[pygame.K_s] or Variables.shoot_button.is_pressed:
         character.is_shooting = True
         character.is_rushing = False
 
     if pressed_key[pygame.K_ESCAPE]:
         reset_board(True, True)
+        Variables.shoot_button.is_active = False
         Variables.current_character = None
 
     if pressed_key[pygame.K_e] or Variables.end_turn_button.is_pressed:
@@ -331,6 +334,7 @@ def alive():
                 team.team_members_alive.remove(character)
                 character.coordinate.character = None
                 if character == Variables.current_character:
+                    Variables.shoot_button.is_active = False
                     Variables.current_character = None
     win()
 

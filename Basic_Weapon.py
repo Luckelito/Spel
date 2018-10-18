@@ -38,9 +38,10 @@ class BasicWeapon:
             for row in Variables.board:
                 for place in row:
                     if place.is_in_range:
-                        self.apply_area(place)
-                    else:
-                        Functions.damage_cover(place, 1)
+                        if not place.is_cover:
+                            self.apply_area(place)
+                        else:
+                            Functions.damage_cover(place, 1)
 
             self.character.has_shot = True
             self.character.has_shield = False

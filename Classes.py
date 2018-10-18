@@ -5,3 +5,4 @@ from Sniper_rifle import *
 from Team import *
 from Circle_weapon import *
 from Round_button import *
+from Square_button import *
