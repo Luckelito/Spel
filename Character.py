@@ -79,7 +79,7 @@ class Character:
                         self.has_jumped = True
                         self.has_jump_destination = False
                         self.current_destination = []
-                        return moves
+                        return 1
 
                     else:
                         if type(self.current_destination[0].character) != Character:
@@ -87,6 +87,7 @@ class Character:
                             Functions.reset_board(True, False)
 
                         self.current_destination.remove(self.current_destination[0])
+                        return 1
 
             return 0
 
@@ -106,7 +107,7 @@ class Character:
                 self.has_moved += moves
                 self.is_moving = False
                 self.current_destination = []
-                return moves
+                return 1
 
             else:
                 if type(self.current_destination[0].character) != Character:
@@ -114,6 +115,8 @@ class Character:
                     Functions.reset_board(True, False)
 
                 self.current_destination.remove(self.current_destination[0])
+
+                return 1
 
         return 0
 

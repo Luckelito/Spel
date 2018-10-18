@@ -193,11 +193,26 @@ def choose_character():
     pressed_mouse = pygame.mouse.get_pressed()
     mouse_pos = pygame.mouse.get_pos()
 
+    if pressed_mouse[0]:  # prevent holding the mouse button down
+        if Variables.mouse_hold:
+            return 0
+        else:
+            Variables.mouse_hold = True
+    else:
+        Variables.mouse_hold = False
+
+    if pressed_key[pygame.K_e]:  # prevent holding the end turn button down
+        if Variables.end_hold:
+            return 0
+        else:
+            Variables.end_hold = True
+    else:
+        Variables.end_hold = False
+
     for button in Variables.all_buttons:
         button.check_if_pressed()
 
     if pressed_key[pygame.K_e] or Variables.end_turn_button.is_pressed:
-        Variables.current_team.used_stamina = Variables.current_team.used_stamina
         reset_board(True, True)
         return "Cancelled"
 
@@ -223,7 +238,7 @@ def turn(character):
     if type(character) != Classes.Character:
         if character == "Cancelled":
             reset_board(True, True)
-            return Variables.current_team.max_stamina
+            return Variables.current_team.stamina
         else:
             return 0
 
@@ -231,17 +246,9 @@ def turn(character):
     pressed_mouse = pygame.mouse.get_pressed()
     mouse_pos = pygame.mouse.get_pos()
 
-    if pressed_mouse[0]:  # prevent holding the mouse button down
-        if Variables.mouse_hold:
-            return 0
-        else:
-            Variables.mouse_hold = True
-    else:
-        Variables.mouse_hold = False
-
     if character.is_shooting:
         if not character.has_shot and not character.has_rushed and not character.has_jumped and character.has_shield:
-            if Variables.current_team.max_stamina - Variables.current_team.used_stamina > character.weapon.stamina_cost:
+            if Variables.current_team.stamina > character.weapon.stamina_cost:
                 return character.weapon.shoot()
         else:
             character.is_shooting = False
@@ -251,8 +258,8 @@ def turn(character):
 
     reset_board(True, True)
 
-    if character.speed - character.has_moved > Variables.current_team.max_stamina - Variables.current_team.used_stamina:
-        target_walk(character.coordinate, Variables.current_team.max_stamina - Variables.current_team.used_stamina)
+    if character.speed - character.has_moved > Variables.current_team.stamina:
+        target_walk(character.coordinate, Variables.current_team.stamina)
     elif character.speed - character.has_moved > 0:
         target_walk(character.coordinate, character.speed - character.has_moved)
 
@@ -284,7 +291,7 @@ def turn(character):
 
     if pressed_key[pygame.K_e] or Variables.end_turn_button.is_pressed:
         reset_board(True, True)
-        return Variables.current_team.max_stamina
+        return Variables.current_team.stamina
 
     for row in Variables.board:
         for place in row:

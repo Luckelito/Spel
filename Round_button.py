@@ -14,11 +14,13 @@ class RoundButton:
         pressed_mouse = pygame.mouse.get_pressed()
         mouse_pos = pygame.mouse.get_pos()
 
-        if pressed_mouse[0]:
-            if ((self.center_x - mouse_pos[0])**2 + (self.center_y - mouse_pos[1])**2)**0.5 <= self.radius:
+        if ((self.center_x - mouse_pos[0]) ** 2 + (self.center_y - mouse_pos[1]) ** 2) ** 0.5 <= self.radius:
+            if pressed_mouse[0]:
                 self.is_pressed = True
             else:
                 self.is_pressed = False
+        else:
+            self.is_pressed = False
 
     def draw_self(self, screen):
         pygame.draw.circle(screen, self.color, (self.center_x, self.center_y), self.radius)

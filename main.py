@@ -49,23 +49,17 @@ pygame.init()
 screen = pygame.display.set_mode((1920, 1080))
 done = False
 
-for team in Variables.teams:
-    team.max_stamina = 12
-    team.used_stamina = 0
-
 while not done:
     if Variables.current_team.team == 1:
         Variables.game_turn += 1
 
-    if not Variables.current_team.used_stamina < Variables.current_team.max_stamina:
+    if Variables.current_team.stamina <= 0:
         Variables.current_team.is_current_team = False
         Variables.teams[Variables.teams.index(Variables.current_team) - 1].is_current_team = True
         Variables.current_team = Variables.teams[Variables.teams.index(Variables.current_team) - 1]
         Variables.current_team.check_points()
         Variables.current_character = None
-        for team in Variables.teams:
-            team.max_stamina = 12
-            team.used_stamina = 0
+        Variables.current_team.stamina = 12
         for character in Variables.current_team.team_members_alive:
             character.has_moved = 0
             character.has_shot = False
@@ -82,13 +76,13 @@ while not done:
                     character.weapon.areas.remove(place)
 
     if Variables.current_team.team == 2 and Variables.game_turn == 1:
-        Variables.current_team.max_stamina = 15
+        Variables.current_team.stamina += 3
         for character in Variables.current_team.team_members_alive:
             character.has_rushed = False
 
     Functions.win()
 
-    Variables.current_team.used_stamina += Functions.turn(Functions.choose_character())
+    Variables.current_team.stamina -= Functions.turn(Functions.choose_character())
 
     Functions.set_graphic_board()
 
