@@ -9,6 +9,7 @@ class SquareButton:
         self.end_y = end_y
         self.is_pressed = False
         self.is_active = is_active
+        self.is_unavailable = False
         self.color = (100, 100, 100)
 
     def check_if_pressed(self):
@@ -24,4 +25,9 @@ class SquareButton:
             self.is_pressed = False
 
     def draw_self(self, screen):
+        print(self.is_unavailable)
+        if self.is_unavailable:
+            self.color = (50, 50, 50)
+        else:
+            self.color = (100, 100, 100)
         pygame.draw.rect(screen, self.color, pygame.Rect(self.start_x, self.start_y, self.end_x - self.start_x, self.end_y - self.start_y))

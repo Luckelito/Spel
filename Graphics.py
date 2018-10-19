@@ -83,7 +83,10 @@ def graphics(screen, font):
         if button.is_active:
             button.draw_self(screen)
 
-    screen.blit(font.render(str(Variables.current_team.stamina), True, (255, 255, 255)), (Variables.end_turn_button.center_x - 20 * len(str(Variables.current_team.stamina)), Variables.end_turn_button.center_y - 30))
+    if Variables.shoot_button.is_active:
+        screen.blit(font.render(str("Shoot (" + str(Variables.current_character.weapon.stamina_cost) + ")"), True, (255, 255, 255)), (Variables.shoot_button.start_x + 25, Variables.shoot_button.start_y + 45))
+    if Variables.end_turn_button.is_active:
+        screen.blit(font.render(str(Variables.current_team.stamina), True, (255, 255, 255)), (Variables.end_turn_button.center_x - 20 * len(str(Variables.current_team.stamina)), Variables.end_turn_button.center_y - 30))
 
     pressed = pygame.key.get_pressed()
     if pressed[pygame.K_UP] and Variables.camera_movement_y - 1 >= 0:

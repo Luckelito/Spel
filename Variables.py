@@ -46,5 +46,5 @@ mouse_hold = False
 end_hold = False
 
 end_turn_button = RoundButton(100, 250, 850, True)
-shoot_button = SquareButton(650, 950, 775, 925, False)
+shoot_button = SquareButton(625, 975, 775, 925, False)
 all_buttons = [end_turn_button, shoot_button]

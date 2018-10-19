@@ -8,6 +8,7 @@ class RoundButton:
         self.center_y = center_y
         self.is_pressed = False
         self.is_active = is_active
+        self.is_unavailable = False
         self.color = (100, 100, 100)
 
     def check_if_pressed(self):
@@ -23,4 +24,8 @@ class RoundButton:
             self.is_pressed = False
 
     def draw_self(self, screen):
+        if self.is_unavailable:
+            self.color = (50, 50, 50)
+        else:
+            self.color = (100, 100, 100)
         pygame.draw.circle(screen, self.color, (self.center_x, self.center_y), self.radius)

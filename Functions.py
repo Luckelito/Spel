@@ -243,6 +243,10 @@ def turn(character):
             return 0
 
     Variables.shoot_button.is_active = True
+    if character.has_shot or character.has_rushed or character.has_jumped or not character.has_shield:
+        Variables.shoot_button.is_unavailable = True
+    else:
+        Variables.shoot_button.is_unavailable = False
 
     pressed_key = pygame.key.get_pressed()
     pressed_mouse = pygame.mouse.get_pressed()
