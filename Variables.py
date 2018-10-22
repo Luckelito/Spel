@@ -47,4 +47,5 @@ end_hold = False
 
 end_turn_button = RoundButton(100, 250, 850, True)
 shoot_button = SquareButton(625, 975, 775, 925, False)
-all_buttons = [end_turn_button, shoot_button]
+cancel_button = SquareButton(1025, 1375, 775, 925, False)
+all_buttons = [end_turn_button, shoot_button, cancel_button]

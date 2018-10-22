@@ -214,6 +214,8 @@ def choose_character():
 
     if pressed_key[pygame.K_e] or Variables.end_turn_button.is_pressed:
         reset_board(True, True)
+        Variables.cancel_button.is_active = False
+        Variables.shoot_button.is_active = False
         return "Cancelled"
 
     if Variables.current_character == None:
@@ -242,6 +244,7 @@ def turn(character):
         else:
             return 0
 
+    Variables.cancel_button.is_active = True
     Variables.shoot_button.is_active = True
     if character.has_shot or character.has_rushed or character.has_jumped or not character.has_shield:
         Variables.shoot_button.is_unavailable = True
@@ -291,13 +294,16 @@ def turn(character):
         character.is_shooting = True
         character.is_rushing = False
 
-    if pressed_key[pygame.K_ESCAPE]:
+    if pressed_key[pygame.K_ESCAPE] or Variables.cancel_button.is_pressed:
         reset_board(True, True)
         Variables.shoot_button.is_active = False
+        Variables.cancel_button.is_active = False
         Variables.current_character = None
 
     if pressed_key[pygame.K_e] or Variables.end_turn_button.is_pressed:
         reset_board(True, True)
+        Variables.shoot_button.is_active = False
+        Variables.cancel_button.is_active = False
         return Variables.current_team.stamina
 
     for row in Variables.board:

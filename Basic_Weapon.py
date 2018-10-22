@@ -22,8 +22,10 @@ class BasicWeapon:
         pressed_mouse = pygame.mouse.get_pressed()
         mouse_pos = pygame.mouse.get_pos()
 
-        if pressed_key[pygame.K_ESCAPE]:
+        if pressed_key[pygame.K_ESCAPE] or Variables.cancel_button.is_pressed:
             self.character.is_shooting = False
+            Variables.shoot_button.is_active = False
+            Variables.cancel_button.is_active = False
             return 0
 
         for row in Variables.board:

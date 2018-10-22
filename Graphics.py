@@ -72,6 +72,12 @@ def graphics(screen, font):
                     shield = pygame.transform.scale(shield, (100, 100))
                     screen.blit(shield, (60 + i * 100, 40 + j * 100))
 
+    pygame.draw.rect(screen, (25, 40, 150), pygame.Rect(860, 0, 100, 100))
+    screen.blit(font.render(str(Variables.team_1.points), True, (255, 255, 255)), (890, 20))
+
+    pygame.draw.rect(screen, (150, 25, 25), pygame.Rect(960, 0, 100, 100))
+    screen.blit(font.render(str(Variables.team_2.points), True, (255, 255, 255)), (990, 20))
+
     if Variables.current_team.team == 1:
         color = (25, 40, 150)
     else:
@@ -85,6 +91,8 @@ def graphics(screen, font):
 
     if Variables.shoot_button.is_active:
         screen.blit(font.render(str("Shoot (" + str(Variables.current_character.weapon.stamina_cost) + ")"), True, (255, 255, 255)), (Variables.shoot_button.start_x + 25, Variables.shoot_button.start_y + 45))
+    if Variables.cancel_button.is_active:
+        screen.blit(font.render("Cancel", True, (255, 255, 255)), (Variables.cancel_button.start_x + 50, Variables.cancel_button.start_y + 45))
     if Variables.end_turn_button.is_active:
         screen.blit(font.render(str(Variables.current_team.stamina), True, (255, 255, 255)), (Variables.end_turn_button.center_x - 20 * len(str(Variables.current_team.stamina)), Variables.end_turn_button.center_y - 30))
 
@@ -97,4 +105,3 @@ def graphics(screen, font):
         Variables.camera_movement_x -= 1
     if pressed[pygame.K_RIGHT] and Variables.camera_movement_x + 1 <= Variables.board_width - Variables.graphic_width:
         Variables.camera_movement_x += 1
-
