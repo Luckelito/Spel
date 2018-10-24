@@ -49,8 +49,10 @@ class Character:
             pressed_mouse = pygame.mouse.get_pressed()
             mouse_pos = pygame.mouse.get_pos()
 
-            if pressed_key[pygame.K_ESCAPE]:
+            if pressed_key[pygame.K_ESCAPE] or Variables.cancel_button.is_pressed:
+                Functions.reset_board(True, True)
                 self.is_jumping = False
+                self.is_moving = False
                 return 0
 
             if pressed_mouse[0]:

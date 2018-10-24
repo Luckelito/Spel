@@ -15,28 +15,35 @@ Functions.equip(Variables.b, Classes.BasicWeapon)
 Functions.equip(Variables.C, Classes.BasicWeapon)
 Functions.equip(Variables.c, Classes.BasicWeapon)
 
-for i in range(int((Variables.board_height * Variables.board_width)/10)):  # covers
-    random_y = randint(1, int(Variables.board_height) - 2)
-    random_x = randint(1, int(Variables.board_width) - 2)
-    random_number = randint(1, 4)
-    Variables.board[random_y][random_x].health = random_number
-    Variables.board[random_y][random_x].is_cover = True
-    Variables.board[random_y][random_x].is_open = False
-    Variables.board[Variables.board_height - random_y - 1][Variables.board_width - random_x - 1].health = random_number
-    Variables.board[Variables.board_height - random_y - 1][Variables.board_width - random_x - 1].name = Variables.board[Variables.board_height - random_y][Variables.board_width - random_x].health
-    Variables.board[Variables.board_height - random_y - 1][Variables.board_width - random_x - 1].is_cover = True
-    Variables.board[Variables.board_height - random_y - 1][Variables.board_width - random_x - 1].is_open = False
+#for i in range(int((Variables.board_height * Variables.board_width)/10)):  # covers
+#    random_y = randint(1, int(Variables.board_height) - 2)
+#    random_x = randint(1, int(Variables.board_width) - 2)
+#    random_number = randint(1, 4)
+#    Variables.board[random_y][random_x].health = random_number
+#    Variables.board[random_y][random_x].is_cover = True
+#    Variables.board[random_y][random_x].is_open = False
+#    Variables.board[Variables.board_height - random_y - 1][Variables.board_width - random_x - 1].health = random_number
+#    Variables.board[Variables.board_height - random_y - 1][Variables.board_width - random_x - 1].name = Variables.board[Variables.board_height - random_y][Variables.board_width - random_x].health
+#    Variables.board[Variables.board_height - random_y - 1][Variables.board_width - random_x - 1].is_cover = True
+#    Variables.board[Variables.board_height - random_y - 1][Variables.board_width - random_x - 1].is_open = False
 
 for i in range(-1, 2):  # capture points
-    for j in range(-1, 2):
+   for j in range(-1, 2):
         Variables.Variables.board[int(Variables.board_height / 2 + i)][int(Variables.board_width / 2 + j)].is_capture_point = True
         Variables.Variables.board[int(Variables.board_height / 2 + i)][int(Variables.board_width / 2 + j)].is_cover = False
         Variables.Variables.board[int(Variables.board_height / 2 + i)][int(Variables.board_width / 2 + j)].health = 0
 
-# cover_list = [[1, 4], [1, 5], [0, 6]]
-# for coordinate in cover_list:
-#    cover = Classes.Cover(name=str(random.randint(1, 4)))
-#    Functions.placement_swap(cover, coordinate[0], coordinate[-1])
+cover_list = [[7, 5], [7, 4], [8, 4], [6, 7], [5, 7], [5, 6]]
+for coordinate in cover_list:
+    random_number = randint(1, 4)
+    Variables.board[coordinate[-1]][coordinate[0]].health = random_number
+    Variables.board[coordinate[-1]][coordinate[0]].is_cover = True
+    Variables.board[Variables.board_height - coordinate[-1] - 1][coordinate[0]].health = random_number
+    Variables.board[Variables.board_height - coordinate[-1] - 1][coordinate[0]].is_cover = True
+    Variables.board[coordinate[-1]][Variables.board_width - coordinate[0] - 1].health = random_number
+    Variables.board[coordinate[-1]][Variables.board_width - coordinate[0] - 1].is_cover = True
+    Variables.board[Variables.board_height - coordinate[-1] - 1][Variables.board_width - coordinate[0] - 1].health = random_number
+    Variables.board[Variables.board_height - coordinate[-1] - 1][Variables.board_width - coordinate[0] - 1].is_cover = True
 
 Functions.starting_positions(int(Variables.board_height), int(Variables.board_width))
 
@@ -53,17 +60,20 @@ while not done:
     if Variables.current_team.team == 1:
         Variables.game_turn += 1
 
-    if Variables.current_team.stamina <= 0:
+    if Variables.current_team.stamina <= 0:  # team switch
         Variables.current_team.is_current_team = False
         Variables.teams[Variables.teams.index(Variables.current_team) - 1].is_current_team = True
         Variables.current_team = Variables.teams[Variables.teams.index(Variables.current_team) - 1]
         Variables.current_team.check_points()
         Variables.current_character = None
+        Variables.shoot_button.is_active = False
+        Variables.cancel_button.is_active = False
         Variables.current_team.stamina = 12
         for character in Variables.current_team.team_members_alive:
             character.has_moved = 0
             character.has_shot = False
             character.has_rushed = False
+            character.has_jumped = False
             character.has_shield = True
 
             areas_to_remove = []

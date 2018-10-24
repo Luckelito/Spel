@@ -25,7 +25,6 @@ class SquareButton:
             self.is_pressed = False
 
     def draw_self(self, screen):
-        print(self.is_unavailable)
         if self.is_unavailable:
             self.color = (50, 50, 50)
         else:
