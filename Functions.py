@@ -64,7 +64,8 @@ def target(origin, ability_range):
     for row in Variables.board:
         for place in row:
             if ((origin.x - place.x) ** 2 + (origin.y - place.y) ** 2) ** 0.5 <= ability_range:
-                place.is_in_range = True
+                if not place.is_cover:
+                    place.is_in_range = True
 
 
 def target_los(origin, ability_range):

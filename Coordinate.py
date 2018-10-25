@@ -24,6 +24,21 @@ class Coordinate:
         self.areas = []
 
     def los(self, character_origin):
+
+        if self.y - character_origin.y != 0:
+            delta_y = (self.y - character_origin.y) / abs(self.y - character_origin.y)
+            if Variables.board[int(character_origin.y + delta_y)][character_origin.x].is_cover:
+                self.los_check(Variables.board[int(character_origin.y + delta_y)][character_origin.x])
+
+        if self.x - character_origin.x != 0:
+            delta_x = (self.x - character_origin.x) / abs(self.x - character_origin.x)
+            if Variables.board[character_origin.y][int(character_origin.x + delta_x)].is_cover:
+                self.los_check(Variables.board[character_origin.y][int(character_origin.x + delta_x)])
+
+        self.los_check(character_origin)
+
+
+    def los_check(self, character_origin):
         if self.y - character_origin.y != 0:
             delta_y = (self.y - character_origin.y) / abs(self.y - character_origin.y)
         if self.x - character_origin.x != 0:

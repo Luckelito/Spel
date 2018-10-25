@@ -51,6 +51,7 @@ class Character:
 
             if pressed_key[pygame.K_ESCAPE] or Variables.cancel_button.is_pressed:
                 Functions.reset_board(True, True)
+                self.current_destination = []
                 self.is_jumping = False
                 self.is_moving = False
                 return 0
