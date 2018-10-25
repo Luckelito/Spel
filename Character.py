@@ -86,7 +86,7 @@ class Character:
 
                     else:
                         if type(self.current_destination[0].character) != Character:
-                            Functions.placement_swap(self, self.current_destination[0])
+                            Functions.move(self, self.current_destination[0])
                             Functions.reset_board(True, False)
 
                         self.current_destination.remove(self.current_destination[0])
@@ -105,7 +105,7 @@ class Character:
             Variables.passed_time = pygame.time.get_ticks()
 
             if len(self.current_destination) == 1:
-                Functions.placement_swap(self, self.current_destination[0])
+                Functions.move(self, self.current_destination[0])
                 Functions.reset_board(True, True)
                 self.has_moved += moves
                 self.is_moving = False
@@ -114,7 +114,7 @@ class Character:
 
             else:
                 if type(self.current_destination[0].character) != Character:
-                    Functions.placement_swap(self, self.current_destination[0])
+                    Functions.move(self, self.current_destination[0])
                     Functions.reset_board(True, False)
 
                 self.current_destination.remove(self.current_destination[0])
@@ -124,6 +124,6 @@ class Character:
         return 0
 
     def jump_movement(self, destination):
-        Functions.placement_swap(self, destination)
+        Functions.move(self, destination)
         Functions.reset_board(True, True)
 

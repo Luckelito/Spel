@@ -12,12 +12,12 @@ def equip(character, weapon_class):
 
 
 def starting_positions(board_height, board_width):
-    placement_swap(Variables.A, Variables.board[int(board_height/2 + 1)][0])
-    placement_swap(Variables.B, Variables.board[int(board_height/2)][0])
-    placement_swap(Variables.C, Variables.board[int(board_height/2 - 1)][0])
-    placement_swap(Variables.a, Variables.board[int(board_height/2 + 1)][int(board_width - 1)])
-    placement_swap(Variables.b, Variables.board[int(board_height/2)][int(board_width - 1)])
-    placement_swap(Variables.c, Variables.board[int(board_height/2 - 1)][int(board_width - 1)])
+    move(Variables.A, Variables.board[int(board_height / 2 + 1)][0])
+    move(Variables.B, Variables.board[int(board_height / 2)][0])
+    move(Variables.C, Variables.board[int(board_height / 2 - 1)][0])
+    move(Variables.a, Variables.board[int(board_height / 2 + 1)][int(board_width - 1)])
+    move(Variables.b, Variables.board[int(board_height / 2)][int(board_width - 1)])
+    move(Variables.c, Variables.board[int(board_height / 2 - 1)][int(board_width - 1)])
 
 
 def set_graphic_board():
@@ -47,9 +47,10 @@ def reset_board(states, stored_info):
             if stored_info:
                 place.required_stamina = 0
                 place.path = []
+                place.cover_los
 
 
-def placement_swap(character, destination):
+def move(character, destination):
     if type(character.coordinate) == Classes.Coordinate:
         character.coordinate.character = None
     character.coordinate = destination
@@ -58,6 +59,10 @@ def placement_swap(character, destination):
         for area in destination.areas:
             if area.character.team != character.team:
                 deal_damage(area.character, character, area.area_damage, True)
+    if len(destination.fire_at_sight) > 0:
+        for shooters_weapon in destination.fire_at_sight:
+            if shooters_weapon.character.team != character.team:
+                shooters_weapon.shoot()
 
 
 def target(origin, ability_range):
@@ -214,12 +219,19 @@ def choose_character():
         button.check_if_pressed()
 
     if pressed_key[pygame.K_e] or Variables.end_turn_button.is_pressed:
-        reset_board(True, True)
-        Variables.cancel_button.is_active = False
-        Variables.shoot_button.is_active = False
-        return "Cancelled"
+        if Variables.current_character is not None:
+            if not Variables.current_character.is_moving:
+                reset_board(True, True)
+                Variables.cancel_button.is_active = False
+                Variables.shoot_button.is_active = False
+                return "Cancelled"
+        else:
+            reset_board(True, True)
+            Variables.cancel_button.is_active = False
+            Variables.shoot_button.is_active = False
+            return "Cancelled"
 
-    if Variables.current_character == None:
+    if Variables.current_character is None:
         if pressed_mouse[0]:
             for row in Variables.graphic_board:
                 for place in row:
@@ -259,7 +271,7 @@ def turn(character):
     if character.is_shooting:
         if not character.has_shot and not character.has_rushed and not character.has_jumped and character.has_shield:
             if Variables.current_team.stamina > character.weapon.stamina_cost:
-                return character.weapon.shoot()
+                return character.weapon.choose_target()
         else:
             character.is_shooting = False
 
@@ -302,10 +314,11 @@ def turn(character):
         Variables.current_character = None
 
     if pressed_key[pygame.K_e] or Variables.end_turn_button.is_pressed:
-        reset_board(True, True)
-        Variables.shoot_button.is_active = False
-        Variables.cancel_button.is_active = False
-        return Variables.current_team.stamina
+        if not character.is_moving:
+            reset_board(True, True)
+            Variables.shoot_button.is_active = False
+            Variables.cancel_button.is_active = False
+            return Variables.current_team.stamina
 
     for row in Variables.board:
         for place in row:

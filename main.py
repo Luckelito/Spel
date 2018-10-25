@@ -33,7 +33,7 @@ for i in range(-1, 2):  # capture points
         Variables.Variables.board[int(Variables.board_height / 2 + i)][int(Variables.board_width / 2 + j)].is_cover = False
         Variables.Variables.board[int(Variables.board_height / 2 + i)][int(Variables.board_width / 2 + j)].health = 0
 
-cover_list = [[7, 5], [7, 4], [8, 4], [6, 7], [5, 7], [5, 6]]
+cover_list = [[7, 5], [7, 4], [6, 7], [5, 7], [5, 6], [9, 5], [10, 5], [11, 5]]
 for coordinate in cover_list:
     random_number = randint(1, 4)
     Variables.board[coordinate[-1]][coordinate[0]].health = random_number
@@ -77,13 +77,22 @@ while not done:
             character.has_shield = True
 
             areas_to_remove = []
-            for place in character.weapon.areas:
-                if len(character.weapon.areas) > 0:
+            if len(character.weapon.areas) > 0:
+                for place in character.weapon.areas:
                     place.areas.remove(character.weapon)
                     areas_to_remove.append(place)
-            for place in areas_to_remove:
-                if len(areas_to_remove) > 0:
+            if len(areas_to_remove) > 0:
+                for place in areas_to_remove:
                     character.weapon.areas.remove(place)
+
+            fire_at_sight_targets_to_remove = []
+            if len(character.weapon.fire_at_sight_targets) > 0:
+                for place in character.weapon.fire_at_sight_targets:
+                    place.fire_at_sight.remove(character.weapon)
+                    fire_at_sight_targets_to_remove.append(place)
+            if len(fire_at_sight_targets_to_remove) > 0:
+                for place in fire_at_sight_targets_to_remove:
+                        character.weapon.fire_at_sight_targets.remove(place)
 
     if Variables.current_team.team == 2 and Variables.game_turn == 1:
         Variables.current_team.stamina += 3

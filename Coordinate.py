@@ -22,21 +22,48 @@ class Coordinate:
         self.path = []
         self.character = None
         self.areas = []
+        self.fire_at_sight = []
+        self.cover_los = None
 
     def los(self, character_origin):
-
-        if self.y - character_origin.y != 0:
-            delta_y = (self.y - character_origin.y) / abs(self.y - character_origin.y)
-            if Variables.board[int(character_origin.y + delta_y)][character_origin.x].is_cover:
-                self.los_check(Variables.board[int(character_origin.y + delta_y)][character_origin.x])
-
-        if self.x - character_origin.x != 0:
-            delta_x = (self.x - character_origin.x) / abs(self.x - character_origin.x)
-            if Variables.board[character_origin.y][int(character_origin.x + delta_x)].is_cover:
-                self.los_check(Variables.board[character_origin.y][int(character_origin.x + delta_x)])
-
         self.los_check(character_origin)
 
+        if self.is_los:
+            return
+
+        else:  # shooting around cover
+            if self.y - character_origin.y != 0:
+                delta_y = (self.y - character_origin.y) / abs(self.y - character_origin.y)
+                if Variables.board[int(character_origin.y + delta_y)][character_origin.x].is_cover:
+                    if self.x - character_origin.x != 0:
+                        if abs((self.y - character_origin.y) / (self.x - character_origin.x)) <= 1:
+                            return
+                    if not Variables.board[character_origin.y][character_origin.x + 1].is_cover:
+                        self.los_check(Variables.board[character_origin.y][character_origin.x + 1])
+                        if self.is_los:
+                            self.cover_los = Variables.board[character_origin.y][character_origin.x + 1]
+                            return
+                    if not Variables.board[character_origin.y][character_origin.x - 1].is_cover:
+                        self.los_check(Variables.board[character_origin.y][character_origin.x - 1])
+                        if self.is_los:
+                            self.cover_los = Variables.board[character_origin.y][character_origin.x - 1]
+                            return
+
+            if self.x - character_origin.x != 0:
+                delta_x = (self.x - character_origin.x) / abs(self.x - character_origin.x)
+                if Variables.board[character_origin.y][int(character_origin.x + delta_x)].is_cover:
+                    if abs((self.y - character_origin.y) / (self.x - character_origin.x)) >= 1:
+                        return
+                    if not Variables.board[character_origin.y + 1][character_origin.x].is_cover:
+                        self.los_check(Variables.board[character_origin.y + 1][character_origin.x])
+                        if self.is_los:
+                            self.cover_los = Variables.board[character_origin.y + 1][character_origin.x]
+                            return
+                    if not Variables.board[character_origin.y - 1][character_origin.x].is_cover:
+                        self.los_check(Variables.board[character_origin.y - 1][character_origin.x])
+                        if self.is_los:
+                            self.cover_los = Variables.board[character_origin.y - 1][character_origin.x]
+                            return
 
     def los_check(self, character_origin):
         if self.y - character_origin.y != 0:
